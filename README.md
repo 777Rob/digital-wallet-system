@@ -1,13 +1,14 @@
 # Digital Wallet System
 
-A single-page web application implementing a digital wallet for an online gaming platform. Users can register, authenticate, place coin-flip bets, and review their transaction and betting history in real time.
+A single-page web application implementing a digital wallet for an online gaming platform. Users can register, authenticate, place coin-flip bets, top up their balance, redeem promotional codes, and review their transaction and betting history in real time.
 
 ## Features
 
 - **Authentication** — Registration and login with JWT-based session persistence.
 - **Coin-Flip Betting** — Place bets with animated coin-flip resolution and instant balance updates.
+- **Wallet Management** — Top up balance and redeem one-time promotional codes (e.g., `HELLO` for €1,000 free credits).
 - **Bet Management** — View paginated bet history with status filtering and cancellation support.
-- **Transaction History** — Filterable, paginated ledger of all wallet activity.
+- **Transaction History** — Filterable, paginated ledger of all wallet activity (bets, wins, cancellations, deposits, promos).
 - **Real-Time Balance** — WebSocket integration ensures the displayed balance stays current across tabs and after background events.
 - **Internationalisation** — Full English and Lithuanian translations, switchable at runtime.
 - **Dark / Light Mode** — Theme toggle powered by Mantine's colour scheme engine, persisted across sessions.
@@ -36,17 +37,17 @@ Digital-Wallet-System/
 │       ├── api/                  # Axios client with auth interceptor
 │       ├── components/
 │       │   ├── Auth/             # AuthLayout, ProtectedRoute
-│       │   ├── common/           # Shared UI (BetStatusBadge, ColorSchemeToggle, LanguageMenu, TransactionAmountCell)
-│       │   ├── Dashboard/        # BetForm, CoinFlipResult, RecentBetsTable, RecentTransactionsTable
+│       │   ├── common/           # Shared UI (AppLogo, BetStatusBadge, ColorSchemeToggle, LanguageMenu, TransactionAmountCell)
+│       │   ├── Dashboard/        # BetForm, CoinFlipResult, TopUpForm, PromoCodeForm, RecentBetsTable, RecentTransactionsTable
 │       │   └── Layout/           # Application shell with sidebar navigation
 │       ├── config/               # Environment-based constants
 │       ├── hooks/
-│       │   ├── mutations/        # useAuthMutations, useBetMutations
+│       │   ├── mutations/        # useAuthMutations, useBetMutations, useWalletMutations
 │       │   └── queries/          # useBets, useTransactions, useRecentTransactions
-│       ├── pages/                # Dashboard, Login, Register, MyBets, Transactions
+│       ├── pages/                # Dashboard, Wallet, Login, Register, MyBets, Transactions
 │       ├── store/                # Zustand stores (auth, wallet)
 │       ├── types/                # Shared TypeScript interfaces
-│       └── utils/                # Currency formatting, error message extraction
+│       └── utils/                # Currency formatting, date formatting, error message extraction
 ├── mock-api/                     # Express.js mock server with Swagger docs
 └── README.md
 ```
@@ -103,14 +104,27 @@ The application uses a dual-store approach:
 TanStack React Query handles all server state:
 
 - **Query hooks** (`useBets`, `useTransactions`, `useRecentBets`, `useRecentTransactions`) provide declarative data fetching with built-in caching and pagination.
-- **Mutation hooks** (`useLoginMutation`, `useRegisterMutation`, `usePlaceBetMutation`, `useCancelBetMutation`) handle write operations and trigger automatic query invalidation on success.
+- **Mutation hooks** (`useLoginMutation`, `useRegisterMutation`, `usePlaceBetMutation`, `useCancelBetMutation`, `useTopUpMutation`, `usePromoCodeMutation`) handle write operations and trigger automatic query invalidation on success.
 
 ### Real-Time Updates
 
-The `useWalletWs` hook establishes a Socket.IO connection that listens for `balance_update` events. When the server emits a balance change (e.g., after a bet resolves), the wallet store updates immediately without requiring an API poll.
+The `useWalletWs` hook establishes a Socket.IO connection that listens for `balance_update` events. When the server emits a balance change (e.g., after a bet resolves or a top-up completes), the wallet store updates immediately without requiring an API poll.
 
 ### Routing and Authentication
 
 - **`ProtectedRoute`** — A route guard component that redirects unauthenticated users to the login page.
 - **`AuthLayout`** — Wraps public pages (login, register) with shared controls for language and theme switching.
 - **`Shell`** — The authenticated layout providing the application header, sidebar navigation, and content area.
+
+### Mock API Endpoints
+
+| Method   | Endpoint           | Description                                 |
+| -------- | ------------------ | ------------------------------------------- |
+| `POST`   | `/register`        | Create a new player account                 |
+| `POST`   | `/login`           | Authenticate and receive access token       |
+| `POST`   | `/bet`             | Place a coin-flip bet                       |
+| `GET`    | `/my-bets`         | List bets with pagination and filtering     |
+| `DELETE` | `/my-bet/:id`      | Cancel a pending bet                        |
+| `GET`    | `/my-transactions` | List transactions with pagination/filtering |
+| `POST`   | `/top-up`          | Deposit funds into wallet                   |
+| `POST`   | `/promo-code`      | Redeem a promotional code                   |
