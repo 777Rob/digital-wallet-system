@@ -108,7 +108,7 @@ export const MyBets = () => {
                         size="xs" 
                         variant="light" 
                         color="red"
-                        disabled={bet.status === 'canceled' || bet.status === 'win' || cancelMutation.isPending}
+                        disabled={bet.status === 'canceled'|| cancelMutation.isPending}
                         onClick={() => handleCancelBet(bet.id)}
                       >
                         {t('cancelBet')}
