@@ -13,6 +13,7 @@ export const usePlaceBetMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recent-bets"] });
       queryClient.invalidateQueries({ queryKey: ["my-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["recent-transactions"] });
       queryClient.invalidateQueries({ queryKey: ["my-bets"] });
     },
   });
@@ -29,6 +30,7 @@ export const useCancelBetMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-bets"] });
       queryClient.invalidateQueries({ queryKey: ["my-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["recent-transactions"] });
       queryClient.invalidateQueries({ queryKey: ["recent-bets"] });
     },
   });
