@@ -1,6 +1,7 @@
 import { Card, Center, Stack, Text, Badge } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { formatEUR } from '../../utils/currency';
+import { IconCoin, IconTrophy, IconMoodSad } from '@tabler/icons-react';
 
 interface CoinFlipResultProps {
   isFlipping: boolean;
@@ -18,8 +19,16 @@ export const CoinFlipResult = ({ isFlipping, result }: CoinFlipResultProps) => {
     <Card shadow="sm" padding="lg" radius="md" withBorder mt="xl">
       <Center mb="md">
         <div className="coin-container">
-          <div className={`coin ${isFlipping ? 'flipping win' : (result?.winAmount ? 'win' : 'lost')}`}>
-            {isFlipping ? '?' : (result?.winAmount ? 'WIN' : 'LOST')}
+          <div className={`coin ${isFlipping ? 'flipping' : (result?.winAmount ? 'win' : 'lost')}`}>
+            <div className="coin-inner">
+              {isFlipping ? (
+                <IconCoin size={60} color="white" stroke={1.5} />
+              ) : result?.winAmount ? (
+                <IconTrophy size={60} color="white" stroke={1.5} />
+              ) : (
+                <IconMoodSad size={60} color="white" stroke={1.5} />
+              )}
+            </div>
           </div>
         </div>
       </Center>
