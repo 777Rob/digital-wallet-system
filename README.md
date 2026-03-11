@@ -12,6 +12,7 @@ A single-page web application implementing a digital wallet for an online gaming
 - **Real-Time Balance** — WebSocket integration ensures the displayed balance stays current across tabs and after background events.
 - **Internationalisation** — Full English and Lithuanian translations, switchable at runtime.
 - **Dark / Light Mode** — Theme toggle powered by Mantine's colour scheme engine, persisted across sessions.
+- **Clean Architecture** — No unnecessary prop drilling; components independently fetch their required data and manage scoped loading/error boundaries (`ErrorState`).
 
 ## Technology Stack
 
@@ -37,14 +38,15 @@ Digital-Wallet-System/
 │       ├── api/                  # Axios client with auth interceptor
 │       ├── components/
 │       │   ├── Auth/             # AuthLayout, ProtectedRoute
-│       │   ├── common/           # Shared UI (AppLogo, BetStatusBadge, ColorSchemeToggle, LanguageMenu, TransactionAmountCell)
+│       │   ├── common/           # Shared UI (AppLogo, BetStatusBadge, ColorSchemeToggle, LanguageMenu, TransactionAmountCell, ErrorState)
 │       │   ├── Dashboard/        # BetForm, CoinFlipResult, TopUpForm, PromoCodeForm, RecentBetsTable, RecentTransactionsTable
 │       │   └── Layout/           # Application shell with sidebar navigation
 │       ├── config/               # Environment-based constants
 │       ├── hooks/
 │       │   ├── mutations/        # useAuthMutations, useBetMutations, useWalletMutations
-│       │   └── queries/          # useBets, useTransactions, useRecentTransactions
-│       ├── pages/                # Dashboard, Wallet, Login, Register, MyBets, Transactions
+│       │   ├── queries/          # useBets, useTransactions, useRecentTransactions
+│       │   └── useCountdown.ts   # Custom hook for standardizing countdown intervals
+│       ├── pages/                # Dashboard, Wallet, Login, Register, MyBets, Transactions, WheelOfFortune
 │       ├── store/                # Zustand stores (auth, wallet)
 │       ├── types/                # Shared TypeScript interfaces
 │       └── utils/                # Currency formatting, date formatting, error message extraction
