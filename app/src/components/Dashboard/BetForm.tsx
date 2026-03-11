@@ -8,6 +8,8 @@ interface BetFormProps {
   onSubmit: (values: { amount: number }) => void;
 }
 
+const QUICK_AMOUNTS = [10, 100, 250, 500, 1000];
+
 export const BetForm = ({ isLoading, onSubmit }: BetFormProps) => {
   const { t } = useTranslation();
   const balance = useWalletStore((state) => state.balance);
@@ -24,8 +26,6 @@ export const BetForm = ({ isLoading, onSubmit }: BetFormProps) => {
   const handleSubmit = form.onSubmit((values) => {
     onSubmit(values);
   });
-
-  const quickAmounts = [5, 10, 50, 100];
 
   const handleQuickAmount = (amount: number) => {
     form.setFieldValue('amount', Math.min(amount, balance));
@@ -54,7 +54,7 @@ export const BetForm = ({ isLoading, onSubmit }: BetFormProps) => {
         />
         
         <Group gap="xs" mb="xl">
-          {quickAmounts.map((amount) => (
+          {QUICK_AMOUNTS.map((amount) => (
             <Button
               key={amount}
               size="compact-xs"
@@ -64,7 +64,7 @@ export const BetForm = ({ isLoading, onSubmit }: BetFormProps) => {
               onClick={() => handleQuickAmount(amount)}
               disabled={balance < 1}
             >
-              +{amount}
+              {amount}
             </Button>
           ))}
           <Button

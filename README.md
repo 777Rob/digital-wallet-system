@@ -45,7 +45,10 @@ Digital-Wallet-System/
 │       ├── hooks/
 │       │   ├── mutations/        # useAuthMutations, useBetMutations, useWalletMutations
 │       │   ├── queries/          # useBets, useTransactions, useRecentTransactions
-│       │   └── useCountdown.ts   # Custom hook for standardizing countdown intervals
+│       │   ├── useCoinFlipAnimation.ts
+│       │   ├── useCountdown.ts   # Custom hook for standardizing countdown intervals
+│       │   ├── useWalletWs.ts
+│       │   └── useWheel.ts
 │       ├── pages/                # Dashboard, Wallet, Login, Register, MyBets, Transactions, WheelOfFortune
 │       ├── store/                # Zustand stores (auth, wallet)
 │       ├── types/                # Shared TypeScript interfaces
