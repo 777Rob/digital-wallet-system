@@ -1,4 +1,4 @@
-import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack, ThemeIcon } from '@mantine/core';
+import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack, Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
@@ -54,14 +54,12 @@ export const Register = () => {
 
   return (
     <Container size={420} w="100%">
-      <Stack align="center" mb="lg">
-        <ThemeIcon size={64} radius="xl" variant="light" color="green">
-          <IconWallet size={32} />
-        </ThemeIcon>
-        <Title ta="center">{t('register')}</Title>
-      </Stack>
-      
       <Paper withBorder shadow="xl" p={40} radius="md">
+        <Group justify="center" gap="xs" mb="md">
+          <IconWallet size={24} color="var(--mantine-color-green-filled)" />
+          <Text fw={600} size="sm">QuestWallet</Text>
+        </Group>
+        <Title ta="center" order={2} mb="xl">Create Account.</Title>
         <form onSubmit={handleSubmit}>
           <Stack>
             <TextInput
@@ -88,7 +86,7 @@ export const Register = () => {
               required
               {...form.getInputProps('confirmPassword')}
             />
-            <Button fullWidth mt="xl" type="submit" loading={mutation.isPending}>
+            <Button fullWidth mt="xl" type="submit" color="green" loading={mutation.isPending}>
               {t('register')}
             </Button>
           </Stack>

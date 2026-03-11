@@ -1,5 +1,5 @@
-import { Container, Title } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
+import { Container, Title, SimpleGrid, Paper, Stack, Text } from '@mantine/core';
+
 import { useWalletStore } from '../store/useWalletStore';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
@@ -12,7 +12,6 @@ import { RecentBetsTable } from '../components/Dashboard/RecentBetsTable';
 import { AxiosError } from 'axios';
 
 export const Dashboard = () => {
-  const { t } = useTranslation();
   const balance = useWalletStore((state) => state.balance);
   
   const { data: recentBets, isLoading: isLoadingBets } = useRecentBets(5);
@@ -54,14 +53,24 @@ export const Dashboard = () => {
   };
 
   return (
-    <Container size="sm" mt="xl">
-      <Title order={2} mb="xl">{t('bet')}</Title>
+    <Container size="lg" mt="xl">
+      <Title order={2} mb="xl">Dashboard</Title>
 
-      <BetForm 
-        balance={balance} 
-        isLoading={mutation.isPending || isFlipping} 
-        onSubmit={handlePlaceBet} 
-      />
+      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mb="xl">
+        <BetForm 
+          balance={balance} 
+          isLoading={mutation.isPending || isFlipping} 
+          onSubmit={handlePlaceBet} 
+        />
+        <Paper shadow="sm" p="xl" withBorder h="100%">
+          <Stack align="center" justify="center" h="100%" gap="xs">
+            <Title order={1} c="green" style={{ fontSize: '3rem' }}>
+              {formatEUR(balance)}
+            </Title>
+            <Text c="dimmed" size="lg" fw={500}>Global Balance</Text>
+          </Stack>
+        </Paper>
+      </SimpleGrid>
 
       {(isFlipping || result) && (
         <CoinFlipResult isFlipping={isFlipping} result={result} />

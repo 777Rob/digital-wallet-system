@@ -1,7 +1,6 @@
-import { Paper, NumberInput, Button } from '@mantine/core';
+import { Paper, NumberInput, Button, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
-import { formatEUR } from '../../utils/currency';
 
 interface BetFormProps {
   balance: number;
@@ -27,22 +26,24 @@ export const BetForm = ({ balance, isLoading, onSubmit }: BetFormProps) => {
   });
 
   return (
-    <Paper shadow="sm" p="xl" withBorder>
+    <Paper shadow="sm" p="xl" withBorder className="gradient-card" h="100%">
+      <Title order={3} mb="lg" style={{ color: 'white' }}>Place New Bet</Title>
       <form onSubmit={handleSubmit}>
         <NumberInput
           label={t('betAmount')}
-          description={`Available: ${formatEUR(balance)}`}
           min={1}
           max={balance}
           decimalScale={2}
           fixedDecimalScale
           required
           {...form.getInputProps('amount')}
-          mb="md"
+          mb="xl"
         />
         <Button 
           type="submit" 
           fullWidth 
+          variant="white"
+          color="green"
           loading={isLoading}
           disabled={isLoading || balance < 1}
         >

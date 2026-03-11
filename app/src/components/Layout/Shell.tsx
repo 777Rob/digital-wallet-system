@@ -63,7 +63,7 @@ export const Shell = () => {
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
             <Group gap="sm">
               <IconWallet size={28} color="var(--mantine-color-green-filled)" />
-              <Title order={3}>Wallet.app</Title>
+              <Title order={3} c="green" style={{ fontFamily: 'Inter, sans-serif' }}>QuestWallet</Title>
             </Group>
           </Group>
 
@@ -108,7 +108,8 @@ export const Shell = () => {
               if (opened) toggle(); // Close on mobile click
             }}
             variant="light"
-            style={{ borderRadius: 'var(--mantine-radius-sm)', marginBottom: 4 }}
+            color="green"
+            style={{ borderRadius: 'var(--mantine-radius-md)', marginBottom: 4, fontWeight: 500 }}
           />
         ))}
       </AppShell.Navbar>
