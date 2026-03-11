@@ -1,4 +1,4 @@
-import { Paper, NumberInput, Button, Title } from '@mantine/core';
+import { Paper, NumberInput, Button, Title, Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 
@@ -22,8 +22,17 @@ export const BetForm = ({ balance, isLoading, onSubmit }: BetFormProps) => {
 
   const handleSubmit = form.onSubmit((values) => {
     onSubmit(values);
-    form.reset();
   });
+
+  const quickAmounts = [5, 10, 50, 100];
+
+  const handleQuickAmount = (amount: number) => {
+    form.setFieldValue('amount', Math.min(amount, balance));
+  };
+
+  const handleMaxAmount = () => {
+    form.setFieldValue('amount', balance);
+  };
 
   return (
     <Paper shadow="sm" p="xl" withBorder className="gradient-card" h="100%">
@@ -37,8 +46,38 @@ export const BetForm = ({ balance, isLoading, onSubmit }: BetFormProps) => {
           fixedDecimalScale
           required
           {...form.getInputProps('amount')}
-          mb="xl"
+          mb="xs"
+          styles={{
+            label: { color: 'white' }
+          }}
         />
+        
+        <Group gap="xs" mb="xl">
+          {quickAmounts.map((amount) => (
+            <Button
+              key={amount}
+              size="compact-xs"
+              variant="transparent"
+              c="white"
+              style={{ padding: '0 8px', border: '1px solid rgba(255, 255, 255, 0.3)' }}
+              onClick={() => handleQuickAmount(amount)}
+              disabled={balance < 1}
+            >
+              +{amount}
+            </Button>
+          ))}
+          <Button
+            size="compact-xs"
+            variant="transparent"
+            c="white"
+            style={{ padding: '0 8px', border: '1px solid rgba(255, 255, 255, 0.3)' }}
+            onClick={handleMaxAmount}
+            disabled={balance < 1}
+          >
+            {t('max')}
+          </Button>
+        </Group>
+
         <Button 
           type="submit" 
           fullWidth 

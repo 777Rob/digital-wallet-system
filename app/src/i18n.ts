@@ -111,6 +111,7 @@ const resources = {
       failedToClaim: "Failed to claim free spin",
       failedToSpin: "Failed to spin the wheel",
       congratulations: "Congratulations!",
+      max: "Max",
     },
   },
   lt: {
@@ -222,6 +223,7 @@ const resources = {
       failedToClaim: "Nepavyko atsiimti nemokamo sukimo",
       failedToSpin: "Nepavyko pasukti rato",
       congratulations: "Sveikiname!",
+      max: "Maks.",
     },
   },
 };
