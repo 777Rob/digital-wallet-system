@@ -10,6 +10,8 @@ const TRANSACTION_TYPE_COLOR: Record<string, string> = {
   win: 'green',
   bet: 'blue',
   cancel: 'gray',
+  deposit: 'teal',
+  promo: 'violet',
 };
 
 export const Transactions = () => {
@@ -49,7 +51,9 @@ export const Transactions = () => {
             { value: 'all', label: t('all') },
             { value: 'bet', label: t('bet') },
             { value: 'win', label: t('win') },
-            { value: 'cancel', label: t('cancel') }
+            { value: 'cancel', label: t('cancel') },
+            { value: 'deposit', label: t('deposit') },
+            { value: 'promo', label: t('promo') }
           ]}
           clearable
         />

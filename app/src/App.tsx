@@ -7,6 +7,7 @@ import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { MyBets } from './pages/MyBets';
 import { Transactions } from './pages/Transactions';
+import { Wallet } from './pages/Wallet';
 import { useAuthStore } from './store/useAuthStore';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Shell />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/wallet" element={<Wallet />} />
             <Route path="/my-bets" element={<MyBets />} />
             <Route path="/transactions" element={<Transactions />} />
           </Route>

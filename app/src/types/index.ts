@@ -32,7 +32,8 @@ export type TransactionType =
   | "win"
   | "cancel"
   | "deposit"
-  | "withdrawal";
+  | "withdrawal"
+  | "promo";
 
 export interface Transaction {
   id: string;

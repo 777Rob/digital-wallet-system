@@ -47,11 +47,105 @@ app.post("/register", (req, res) => {
     accessToken: null,
     bets: [],
     transactions: [],
+    redeemedCodes: [],
   });
 
   res.json({
     id,
     name,
+  });
+});
+
+const PROMO_CODES = {
+  HELLO: { amount: 1000, description: "Welcome bonus" },
+};
+
+app.post("/top-up", (req, res) => {
+  const { amount } = req.body;
+  const authorization = req.headers.authorization;
+
+  if (!authorization)
+    return res.status(401).json({ message: "Invalid token" });
+
+  const player = players.find(
+    (player) => player.accessToken === authorization.replace("Bearer ", "")
+  );
+
+  if (!player) return res.status(401).json({ message: "Invalid token" });
+
+  if (!amount || amount < 1)
+    return res.status(400).json({ message: "Minimum top-up amount is €1.00" });
+
+  if (amount > 10000)
+    return res.status(400).json({ message: "Maximum top-up amount is €10,000" });
+
+  player.balance += amount;
+
+  const transactionId = faker.string.uuid();
+  player.transactions.push({
+    id: transactionId,
+    amount,
+    type: "deposit",
+    createdAt: new Date(),
+  });
+
+  io.emit("balance_update", {
+    userId: player.id,
+    balance: player.balance,
+  });
+
+  res.json({
+    transactionId,
+    balance: player.balance,
+    currency: player.currency,
+  });
+});
+
+app.post("/promo-code", (req, res) => {
+  const { code } = req.body;
+  const authorization = req.headers.authorization;
+
+  if (!authorization)
+    return res.status(401).json({ message: "Invalid token" });
+
+  const player = players.find(
+    (player) => player.accessToken === authorization.replace("Bearer ", "")
+  );
+
+  if (!player) return res.status(401).json({ message: "Invalid token" });
+
+  if (!code || !code.trim())
+    return res.status(400).json({ message: "Please enter a promo code" });
+
+  const promo = PROMO_CODES[code.trim().toUpperCase()];
+  if (!promo)
+    return res.status(400).json({ message: "Invalid promotional code" });
+
+  if (player.redeemedCodes.includes(code.trim().toUpperCase()))
+    return res.status(400).json({ message: "This code has already been redeemed" });
+
+  player.redeemedCodes.push(code.trim().toUpperCase());
+  player.balance += promo.amount;
+
+  const transactionId = faker.string.uuid();
+  player.transactions.push({
+    id: transactionId,
+    amount: promo.amount,
+    type: "promo",
+    createdAt: new Date(),
+  });
+
+  io.emit("balance_update", {
+    userId: player.id,
+    balance: player.balance,
+  });
+
+  res.json({
+    transactionId,
+    balance: player.balance,
+    currency: player.currency,
+    amount: promo.amount,
+    description: promo.description,
   });
 });
 
