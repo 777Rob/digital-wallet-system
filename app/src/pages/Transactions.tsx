@@ -3,6 +3,7 @@ import { Container, Title, Table, Pagination, Group, Select, TextInput, Badge, L
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useTransactions } from '../hooks/queries/useTransactions';
+import { formatDate } from '../utils/date';
 import { TransactionAmountCell } from '../components/common/TransactionAmountCell';
 
 const TRANSACTION_TYPE_COLOR: Record<string, string> = {
@@ -80,10 +81,10 @@ export const Transactions = () => {
               <Table.Tbody>
                 {data?.data.map((tx) => (
                   <Table.Tr key={tx.id}>
-                    <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                    <Table.Td className="truncated-id-cell">
                       <Text size="xs" c="dimmed">{tx.id}</Text>
                     </Table.Td>
-                    <Table.Td>{new Date(tx.createdAt).toLocaleString(undefined, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</Table.Td>
+                    <Table.Td>{formatDate(tx.createdAt)}</Table.Td>
                     <Table.Td>
                       <Badge color={TRANSACTION_TYPE_COLOR[tx.type] ?? 'gray'}>
                         {tx.type.toUpperCase()}

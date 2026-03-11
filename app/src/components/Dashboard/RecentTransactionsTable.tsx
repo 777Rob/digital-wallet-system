@@ -2,6 +2,7 @@ import { Paper, Center, Loader, Text, Table, Button, Box } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatEUR } from '../../utils/currency';
+import { formatDate } from '../../utils/date';
 import type { Transaction } from '../../types';
 
 interface RecentTransactionsTableProps {
@@ -32,7 +33,7 @@ export const RecentTransactionsTable = ({ transactions, isLoading }: RecentTrans
               <Table.Tbody>
                 {transactions.map((tx) => (
                   <Table.Tr key={tx.id}>
-                    <Table.Td>{new Date(tx.createdAt).toLocaleString(undefined, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</Table.Td>
+                    <Table.Td>{formatDate(tx.createdAt)}</Table.Td>
                     <Table.Td>
                       {/* Mapping transaction type to visual status (similar to mockup which uses words like "Blashboard" we use Type) */}
                       <Text size="sm" c="dimmed" tt="capitalize">{tx.type}</Text>

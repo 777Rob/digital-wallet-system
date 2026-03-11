@@ -2,12 +2,13 @@ import { useMemo } from 'react';
 import { AppShell, Burger, Group, Title, Text, ActionIcon, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Outlet, NavLink as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { IconLogout, IconCoin, IconTicket, IconHistory, IconWallet } from '@tabler/icons-react';
+import { IconLogout, IconCoin, IconTicket, IconHistory } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useWalletStore } from '../../store/useWalletStore';
 import { useWalletWs } from '../../hooks/useWalletWs';
 import { formatEUR } from '../../utils/currency';
+import { AppLogo } from '../common/AppLogo';
 import { LanguageMenu } from '../common/LanguageMenu';
 import { ColorSchemeToggle } from '../common/ColorSchemeToggle';
 
@@ -48,7 +49,7 @@ export const Shell = () => {
           <Group wrap="nowrap" gap="sm">
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
             <Group gap="sm" wrap="nowrap">
-              <IconWallet size={34} className="wallet-logo-icon" />
+              <AppLogo iconOnly />
               <Title order={2} c="green" visibleFrom="sm" style={{ fontFamily: 'Inter, sans-serif' }}>QuestWallet</Title>
             </Group>
           </Group>

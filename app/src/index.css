@@ -144,3 +144,11 @@ body {
 .mantine-Table-tr:last-of-type td {
   border-bottom: none;
 }
+
+/* Truncated ID cells in tables */
+.truncated-id-cell {
+  max-width: 120px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

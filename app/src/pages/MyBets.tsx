@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
+import { formatDate } from '../utils/date';
 import { useBets } from '../hooks/queries/useBets';
 import { useCancelBetMutation } from '../hooks/mutations/useBetMutations';
 import { extractErrorMessage } from '../utils/errorMessage';
@@ -93,10 +94,10 @@ export const MyBets = () => {
               <Table.Tbody>
                 {data?.data.map((bet) => (
                   <Table.Tr key={bet.id}>
-                    <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                    <Table.Td className="truncated-id-cell">
                       <Text size="xs" c="dimmed">{bet.id}</Text>
                     </Table.Td>
-                    <Table.Td>{new Date(bet.createdAt).toLocaleString(undefined, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</Table.Td>
+                    <Table.Td>{formatDate(bet.createdAt)}</Table.Td>
                     <Table.Td>{formatEUR(bet.amount)}</Table.Td>
                     <Table.Td>{bet.winAmount ? formatEUR(bet.winAmount) : '-'}</Table.Td>
                     <Table.Td>

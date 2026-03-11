@@ -1,4 +1,4 @@
-import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack, Group } from '@mantine/core';
+import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
@@ -7,7 +7,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useWalletStore } from '../store/useWalletStore';
 import { useLoginMutation } from '../hooks/mutations/useAuthMutations';
 import { extractErrorMessage } from '../utils/errorMessage';
-import { IconWallet } from '@tabler/icons-react';
+import { AppLogo } from '../components/common/AppLogo';
 
 export const Login = () => {
   const { t } = useTranslation();
@@ -49,10 +49,7 @@ export const Login = () => {
   return (
     <Container size={420} w="100%">
       <Paper withBorder shadow="xl" p={40} radius="md">
-        <Group justify="center" gap="xs" mb="xl">
-          <IconWallet size={36} className="wallet-logo-icon" />
-          <Text fw={700} size="xl">QuestWallet</Text>
-        </Group>
+        <AppLogo />
         <Title ta="center" order={2} mb="xl">{t('welcomeBack')}</Title>
         <form onSubmit={handleSubmit}>
           <Stack>
