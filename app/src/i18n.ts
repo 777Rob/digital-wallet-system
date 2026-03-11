@@ -48,6 +48,9 @@ const resources = {
       failedToPlaceBet: "Failed to place bet",
       noRecentBets: "No recent bets",
       result: "Result",
+      viewAll: "View All",
+      quickHistory: "Quick History",
+      activeBets: "Active Bets",
     },
   },
   lt: {
@@ -96,6 +99,9 @@ const resources = {
       failedToPlaceBet: "Nepavyko atlikti statymo",
       noRecentBets: "Nėra paskutinių statymų",
       result: "Rezultatas",
+      viewAll: "Žiūrėti visus",
+      quickHistory: "Greita istorija",
+      activeBets: "Aktyvūs statymai",
     },
   },
 };

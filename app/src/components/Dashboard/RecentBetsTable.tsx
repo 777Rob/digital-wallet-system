@@ -1,4 +1,5 @@
-import { Paper, Center, Loader, Text, Table, Badge } from '@mantine/core';
+import { Paper, Center, Loader, Text, Table, Badge, Button, Box } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatEUR } from '../../utils/currency';
 import type { Bet } from '../../types';
@@ -12,12 +13,13 @@ export const RecentBetsTable = ({ bets, isLoading }: RecentBetsTableProps) => {
   const { t } = useTranslation();
 
   return (
-    <Paper shadow="sm" radius="md" withBorder>
+    <Paper shadow="sm" radius="md" withBorder p={0} style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       {isLoading ? (
-        <Center p="xl"><Loader /></Center>
+        <Center p="xl" style={{ flexGrow: 1 }}><Loader /></Center>
       ) : !bets || bets.length === 0 ? (
-        <Center p="xl"><Text c="dimmed">{t('noRecentBets')}</Text></Center>
+        <Center p="xl" style={{ flexGrow: 1 }}><Text c="dimmed">{t('noRecentBets')}</Text></Center>
       ) : (
+        <Box style={{ flexGrow: 1, padding: 'var(--mantine-spacing-md)' }}>
         <Table highlightOnHover verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>
@@ -40,6 +42,20 @@ export const RecentBetsTable = ({ bets, isLoading }: RecentBetsTableProps) => {
             ))}
           </Table.Tbody>
         </Table>
+        </Box>
+      )}
+      {!isLoading && bets && bets.length > 0 && (
+        <Button 
+          component={Link} 
+          to="/my-bets" 
+          variant="light" 
+          color="green" 
+          fullWidth 
+          radius={0}
+          style={{ borderBottomLeftRadius: 'var(--mantine-radius-md)', borderBottomRightRadius: 'var(--mantine-radius-md)' }}
+        >
+          {t('viewAll')}
+        </Button>
       )}
     </Paper>
   );

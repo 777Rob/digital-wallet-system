@@ -1,14 +1,16 @@
-import { Container, Title, SimpleGrid, Paper, Stack, Text } from '@mantine/core';
+import { Container, Title, SimpleGrid, Paper, Stack, Text, Group, Box } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useWalletStore } from '../store/useWalletStore';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
 import { useRecentBets } from '../hooks/queries/useBets';
+import { useTransactions } from '../hooks/queries/useTransactions';
 import { usePlaceBetMutation } from '../hooks/mutations/useBetMutations';
 import { useCoinFlipAnimation } from '../hooks/useCoinFlipAnimation';
 import { BetForm } from '../components/Dashboard/BetForm';
 import { CoinFlipResult } from '../components/Dashboard/CoinFlipResult';
 import { RecentBetsTable } from '../components/Dashboard/RecentBetsTable';
+import { RecentTransactionsTable } from '../components/Dashboard/RecentTransactionsTable';
 import { AxiosError } from 'axios';
 
 export const Dashboard = () => {
@@ -16,6 +18,7 @@ export const Dashboard = () => {
   const balance = useWalletStore((state) => state.balance);
   
   const { data: recentBets, isLoading: isLoadingBets } = useRecentBets(5);
+  const { data: recentTransactions, isLoading: isLoadingTransactions } = useTransactions({ limit: 5 });
   const mutation = usePlaceBetMutation();
 
   const {
@@ -77,8 +80,21 @@ export const Dashboard = () => {
         <CoinFlipResult isFlipping={isFlipping} result={result} />
       )}
 
-      <Title order={3} mt="xl" mb="md">{t('recentBets')}</Title>
-      <RecentBetsTable bets={recentBets?.data} isLoading={isLoadingBets} />
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg" mt="xl">
+        <Box>
+          <Group justify="space-between" mb="md">
+            <Title order={3}>{t('quickHistory')}</Title>
+          </Group>
+          <RecentTransactionsTable transactions={recentTransactions?.data} isLoading={isLoadingTransactions} />
+        </Box>
+        
+        <Box>
+          <Group justify="space-between" mb="md">
+            <Title order={3}>{t('activeBets')}</Title>
+          </Group>
+          <RecentBetsTable bets={recentBets?.data} isLoading={isLoadingBets} />
+        </Box>
+      </SimpleGrid>
     </Container>
   );
 };
