@@ -8,6 +8,7 @@ import { useTopUpMutation, usePromoCodeMutation } from '../hooks/mutations/useWa
 import { extractErrorMessage } from '../utils/errorMessage';
 import { TopUpForm } from '../components/Dashboard/TopUpForm';
 import { PromoCodeForm } from '../components/Dashboard/PromoCodeForm';
+import type { UseFormReturnType } from '@mantine/form';
 
 export const Wallet = () => {
   const { t } = useTranslation();
@@ -35,9 +36,10 @@ export const Wallet = () => {
     });
   };
 
-  const handlePromoCode = (values: { code: string }) => {
+  const handlePromoCode = (values: { code: string }, form: UseFormReturnType<{ code: string }>) => {
     promoMutation.mutate(values, {
       onSuccess: (data) => {
+        form.reset();
         useWalletStore.getState().setBalance(data.balance);
         notifications.show({
           title: t('success'),
@@ -46,9 +48,22 @@ export const Wallet = () => {
         });
       },
       onError: (error) => {
+        const backendMessage = extractErrorMessage(error, t('failedToRedeemPromo'));
+        let message = backendMessage;
+        
+        if (backendMessage === "Invalid promotional code") {
+          message = t('invalidPromoCode');
+        } else if (backendMessage === "This code has already been redeemed") {
+          message = t('promoAlreadyRedeemed');
+        } else if (backendMessage === "Please enter a promo code") {
+          message = t('pleaseEnterPromoCode');
+        }
+
+        // Set an error to display near the field exactly as user requested
+        form.setFieldError('code', `${message}: ${values.code}`);
         notifications.show({
           title: t('error'),
-          message: extractErrorMessage(error, t('failedToRedeemPromo')),
+          message,
           color: 'red',
         });
       },

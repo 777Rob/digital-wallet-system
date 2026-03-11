@@ -1,11 +1,12 @@
 import { Paper, TextInput, Button, Title, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import type { UseFormReturnType } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { IconGift } from '@tabler/icons-react';
 
 interface PromoCodeFormProps {
   isLoading: boolean;
-  onSubmit: (values: { code: string }) => void;
+  onSubmit: (values: { code: string }, form: UseFormReturnType<{ code: string }>) => void;
 }
 
 export const PromoCodeForm = ({ isLoading, onSubmit }: PromoCodeFormProps) => {
@@ -19,8 +20,7 @@ export const PromoCodeForm = ({ isLoading, onSubmit }: PromoCodeFormProps) => {
   });
 
   const handleSubmit = form.onSubmit((values) => {
-    onSubmit(values);
-    form.reset();
+    onSubmit(values, form);
   });
 
   return (

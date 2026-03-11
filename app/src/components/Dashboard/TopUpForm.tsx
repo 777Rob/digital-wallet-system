@@ -31,10 +31,10 @@ export const TopUpForm = ({ isLoading, onSubmit }: TopUpFormProps) => {
         <Stack gap="sm">
           <NumberInput
             label={t('amount')}
-            min={1}
-            max={10000}
+            description={t('topUpLimits')}
             decimalScale={2}
             fixedDecimalScale
+            clampBehavior="none"
             required
             {...form.getInputProps('amount')}
           />
