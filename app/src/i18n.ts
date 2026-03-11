@@ -82,6 +82,10 @@ const resources = {
       promoBannerTitle: "🎉 Exclusive Offer",
       promoBannerText:
         "Enter promo code HELLO to claim €1,000 in free credits — one-time use only!",
+      emailPlaceholder: "hello@example.com",
+      passwordPlaceholder: "Your password",
+      namePlaceholder: "John Doe",
+      confirmPasswordPlaceholder: "Confirm password",
     },
   },
   lt: {
@@ -164,6 +168,10 @@ const resources = {
       promoBannerTitle: "🎉 Išskirtinis pasiūlymas",
       promoBannerText:
         "Įveskite akcijos kodą HELLO ir gaukite €1 000 nemokamų kreditų — galima panaudoti tik vieną kartą!",
+      emailPlaceholder: "hello@example.com",
+      passwordPlaceholder: "Jūsų slaptažodis",
+      namePlaceholder: "Jonas Jonaitis",
+      confirmPasswordPlaceholder: "Patvirtinkite slaptažodį",
     },
   },
 };

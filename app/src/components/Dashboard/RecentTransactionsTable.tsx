@@ -18,7 +18,7 @@ export const RecentTransactionsTable = ({ transactions, isLoading }: RecentTrans
       {isLoading ? (
         <Center p="xl" style={{ flexGrow: 1 }}><Loader /></Center>
       ) : !transactions || transactions.length === 0 ? (
-        <Center p="xl" style={{ flexGrow: 1 }}><Text c="dimmed">No recent transactions</Text></Center>
+        <Center p="xl" style={{ flexGrow: 1 }}><Text c="dimmed">{t('noRecentTransactions')}</Text></Center>
       ) : (
         <Box style={{ flexGrow: 1, padding: 'var(--mantine-spacing-xs)' }}>
           <Table.ScrollContainer minWidth={280}>

@@ -55,13 +55,13 @@ export const Login = () => {
           <Stack>
             <TextInput
               label={t('email')}
-              placeholder="hello@example.com"
+              placeholder={t('emailPlaceholder')}
               required
               {...form.getInputProps('email')}
             />
             <PasswordInput
               label={t('password')}
-              placeholder="Your password"
+              placeholder={t('passwordPlaceholder')}
               required
               {...form.getInputProps('password')}
             />

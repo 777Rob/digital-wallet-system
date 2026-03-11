@@ -57,25 +57,25 @@ export const Register = () => {
           <Stack>
             <TextInput
               label={t('name')}
-              placeholder="John Doe"
+              placeholder={t('namePlaceholder')}
               required
               {...form.getInputProps('name')}
             />
             <TextInput
               label={t('email')}
-              placeholder="hello@example.com"
+              placeholder={t('emailPlaceholder')}
               required
               {...form.getInputProps('email')}
             />
             <PasswordInput
               label={t('password')}
-              placeholder="Your password"
+              placeholder={t('passwordPlaceholder')}
               required
               {...form.getInputProps('password')}
             />
             <PasswordInput
               label={t('confirmPassword')}
-              placeholder="Confirm password"
+              placeholder={t('confirmPasswordPlaceholder')}
               required
               {...form.getInputProps('confirmPassword')}
             />
