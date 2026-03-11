@@ -4,19 +4,21 @@ import { useTranslation } from 'react-i18next';
 import { formatEUR } from '../../utils/currency';
 import { formatDate } from '../../utils/date';
 import { BetStatusBadge } from '../common/BetStatusBadge';
-import type { Bet } from '../../types';
+import { ErrorState } from '../common/ErrorState';
+import { useRecentBets } from '../../hooks/queries/useBets';
 
-interface RecentBetsTableProps {
-  bets?: Bet[];
-  isLoading: boolean;
-}
-
-export const RecentBetsTable = ({ bets, isLoading }: RecentBetsTableProps) => {
+export const RecentBetsTable = () => {
   const { t } = useTranslation();
+  const { data, isLoading, error, refetch } = useRecentBets(5);
+  const bets = data?.data;
+
+  if (error) {
+    return <ErrorState error={error} onRetry={() => refetch()} title={t('failedToLoadBets') || 'Failed to load'} p="md" />;
+  }
 
   return (
     <Paper shadow="sm" radius="md" withBorder p={0} style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      {isLoading ? (
+      {isLoading && !bets ? (
         <Center p="xl" style={{ flexGrow: 1 }}><Loader /></Center>
       ) : !bets || bets.length === 0 ? (
         <Center p="xl" style={{ flexGrow: 1 }}><Text c="dimmed">{t('noRecentBets')}</Text></Center>

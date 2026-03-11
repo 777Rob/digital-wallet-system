@@ -1,15 +1,16 @@
 import { Paper, NumberInput, Button, Title, Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
+import { useWalletStore } from '../../store/useWalletStore';
 
 interface BetFormProps {
-  balance: number;
   isLoading: boolean;
   onSubmit: (values: { amount: number }) => void;
 }
 
-export const BetForm = ({ balance, isLoading, onSubmit }: BetFormProps) => {
+export const BetForm = ({ isLoading, onSubmit }: BetFormProps) => {
   const { t } = useTranslation();
+  const balance = useWalletStore((state) => state.balance);
 
   const form = useForm({
     initialValues: {

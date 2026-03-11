@@ -3,19 +3,21 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatEUR } from '../../utils/currency';
 import { formatDate } from '../../utils/date';
-import type { Transaction } from '../../types';
+import { ErrorState } from '../common/ErrorState';
+import { useRecentTransactions } from '../../hooks/queries/useRecentTransactions';
 
-interface RecentTransactionsTableProps {
-  transactions?: Transaction[];
-  isLoading: boolean;
-}
-
-export const RecentTransactionsTable = ({ transactions, isLoading }: RecentTransactionsTableProps) => {
+export const RecentTransactionsTable = () => {
   const { t } = useTranslation();
+  const { data, isLoading, error, refetch } = useRecentTransactions(5);
+  const transactions = data?.data;
+
+  if (error) {
+    return <ErrorState error={error} onRetry={() => refetch()} title={t('failedToLoadTransactions') || 'Failed to load'} p="md" />;
+  }
 
   return (
     <Paper shadow="sm" radius="md" withBorder p={0} style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      {isLoading ? (
+      {isLoading && !transactions ? (
         <Center p="xl" style={{ flexGrow: 1 }}><Loader /></Center>
       ) : !transactions || transactions.length === 0 ? (
         <Center p="xl" style={{ flexGrow: 1 }}><Text c="dimmed">{t('noRecentTransactions')}</Text></Center>

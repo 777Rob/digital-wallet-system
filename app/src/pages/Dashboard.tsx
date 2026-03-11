@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useWalletStore } from '../store/useWalletStore';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
-import { useRecentBets } from '../hooks/queries/useBets';
-import { useRecentTransactions } from '../hooks/queries/useRecentTransactions';
 import { usePlaceBetMutation } from '../hooks/mutations/useBetMutations';
 import { useCoinFlipAnimation } from '../hooks/useCoinFlipAnimation';
 import { extractErrorMessage } from '../utils/errorMessage';
@@ -17,8 +15,6 @@ export const Dashboard = () => {
   const { t } = useTranslation();
   const balance = useWalletStore((state) => state.balance);
   
-  const { data: recentBets, isLoading: isLoadingBets } = useRecentBets(5);
-  const { data: recentTransactions, isLoading: isLoadingTransactions } = useRecentTransactions(5);
   const mutation = usePlaceBetMutation();
 
   const {
@@ -58,7 +54,6 @@ export const Dashboard = () => {
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mb="xl">
         <BetForm 
-          balance={balance} 
           isLoading={mutation.isPending || isFlipping} 
           onSubmit={handlePlaceBet} 
         />
@@ -81,14 +76,14 @@ export const Dashboard = () => {
           <Group justify="space-between" mb="md">
             <Title order={3}>{t('quickHistory')}</Title>
           </Group>
-          <RecentTransactionsTable transactions={recentTransactions?.data} isLoading={isLoadingTransactions} />
+          <RecentTransactionsTable />
         </Box>
         
         <Box>
           <Group justify="space-between" mb="md">
             <Title order={3}>{t('activeBets')}</Title>
           </Group>
-          <RecentBetsTable bets={recentBets?.data} isLoading={isLoadingBets} />
+          <RecentBetsTable />
         </Box>
       </SimpleGrid>
     </Container>

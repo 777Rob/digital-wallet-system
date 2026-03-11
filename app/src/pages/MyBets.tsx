@@ -9,6 +9,7 @@ import { useBets } from '../hooks/queries/useBets';
 import { useCancelBetMutation } from '../hooks/mutations/useBetMutations';
 import { extractErrorMessage } from '../utils/errorMessage';
 import { BetStatusBadge } from '../components/common/BetStatusBadge';
+import { ErrorState } from '../components/common/ErrorState';
 
 export const MyBets = () => {
   const { t } = useTranslation();
@@ -18,21 +19,25 @@ export const MyBets = () => {
   const [debouncedId] = useDebouncedValue(idFilter, 500);
   const limit = 10;
 
-  const { data, isLoading, error } = useBets({
+  const { data, isLoading, error, refetch } = useBets({
     page,
     limit,
     status,
     id: debouncedId,
   });
 
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
   const cancelMutation = useCancelBetMutation();
 
   const handleCancelBet = (id: string) => {
+    setCancelingId(id);
     cancelMutation.mutate(id, {
       onSuccess: () => {
+        setCancelingId(null);
         notifications.show({ title: t('success'), message: t('betCancelledSuccess'), color: 'green' });
       },
       onError: (error) => {
+        setCancelingId(null);
         notifications.show({ title: t('error'), message: extractErrorMessage(error, t('failedToCancelBet')), color: 'red' });
       }
     });
@@ -42,7 +47,7 @@ export const MyBets = () => {
     return (
       <Container mt="xl">
         <Title order={2} mb="xl">{t('myBets')}</Title>
-        <Text c="red">{t('failedToLoadBets')}</Text>
+        <ErrorState error={error} onRetry={() => refetch()} title={t('failedToLoadBets')} />
       </Container>
     );
   }
@@ -108,7 +113,8 @@ export const MyBets = () => {
                         size="xs" 
                         variant="light" 
                         color="red"
-                        disabled={bet.status === 'canceled'|| cancelMutation.isPending}
+                        disabled={bet.status === 'canceled' || (cancelMutation.isPending && cancelingId === bet.id)}
+                        loading={cancelMutation.isPending && cancelingId === bet.id}
                         onClick={() => handleCancelBet(bet.id)}
                       >
                         {t('cancelBet')}

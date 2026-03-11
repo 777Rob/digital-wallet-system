@@ -5,6 +5,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { useTransactions } from '../hooks/queries/useTransactions';
 import { formatDate } from '../utils/date';
 import { TransactionAmountCell } from '../components/common/TransactionAmountCell';
+import { ErrorState } from '../components/common/ErrorState';
 
 const TRANSACTION_TYPE_COLOR: Record<string, string> = {
   win: 'green',
@@ -22,7 +23,7 @@ export const Transactions = () => {
   const [debouncedId] = useDebouncedValue(idFilter, 500);
   const limit = 10;
 
-  const { data, isLoading, error } = useTransactions({
+  const { data, isLoading, error, refetch } = useTransactions({
     page,
     limit,
     type,
@@ -33,7 +34,7 @@ export const Transactions = () => {
     return (
       <Container mt="xl">
         <Title order={2} mb="xl">{t('transactions')}</Title>
-        <Text c="red">{t('failedToLoadTransactions')}</Text>
+        <ErrorState error={error} onRetry={() => refetch()} title={t('failedToLoadTransactions')} />
       </Container>
     );
   }

@@ -2,73 +2,13 @@ import { Container, Title, SimpleGrid, Paper, Stack, Text, Alert } from '@mantin
 import { IconGift } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useWalletStore } from '../store/useWalletStore';
-import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
-import { useTopUpMutation, usePromoCodeMutation } from '../hooks/mutations/useWalletMutations';
-import { extractErrorMessage } from '../utils/errorMessage';
 import { TopUpForm } from '../components/Dashboard/TopUpForm';
 import { PromoCodeForm } from '../components/Dashboard/PromoCodeForm';
-import type { UseFormReturnType } from '@mantine/form';
 
 export const Wallet = () => {
   const { t } = useTranslation();
   const balance = useWalletStore((state) => state.balance);
-  const topUpMutation = useTopUpMutation();
-  const promoMutation = usePromoCodeMutation();
-
-  const handleTopUp = (values: { amount: number }) => {
-    topUpMutation.mutate(values, {
-      onSuccess: (data) => {
-        useWalletStore.getState().setBalance(data.balance);
-        notifications.show({
-          title: t('success'),
-          message: `${t('topUpSuccess')} +${formatEUR(values.amount)}`,
-          color: 'green',
-        });
-      },
-      onError: (error) => {
-        notifications.show({
-          title: t('error'),
-          message: extractErrorMessage(error, t('failedToTopUp')),
-          color: 'red',
-        });
-      },
-    });
-  };
-
-  const handlePromoCode = (values: { code: string }, form: UseFormReturnType<{ code: string }>) => {
-    promoMutation.mutate(values, {
-      onSuccess: (data) => {
-        form.reset();
-        useWalletStore.getState().setBalance(data.balance);
-        notifications.show({
-          title: t('success'),
-          message: `${t('promoRedeemed')} +${formatEUR(data.amount)}`,
-          color: 'green',
-        });
-      },
-      onError: (error) => {
-        const backendMessage = extractErrorMessage(error, t('failedToRedeemPromo'));
-        let message = backendMessage;
-        
-        if (backendMessage === "Invalid promotional code") {
-          message = t('invalidPromoCode');
-        } else if (backendMessage === "This code has already been redeemed") {
-          message = t('promoAlreadyRedeemed');
-        } else if (backendMessage === "Please enter a promo code") {
-          message = t('pleaseEnterPromoCode');
-        }
-
-        // Set an error to display near the field exactly as user requested
-        form.setFieldError('code', `${message}: ${values.code}`);
-        notifications.show({
-          title: t('error'),
-          message,
-          color: 'red',
-        });
-      },
-    });
-  };
 
   return (
     <Container size="lg" mt="xl">
@@ -95,8 +35,8 @@ export const Wallet = () => {
       </Alert>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-        <TopUpForm isLoading={topUpMutation.isPending} onSubmit={handleTopUp} />
-        <PromoCodeForm isLoading={promoMutation.isPending} onSubmit={handlePromoCode} />
+        <TopUpForm />
+        <PromoCodeForm />
       </SimpleGrid>
     </Container>
   );

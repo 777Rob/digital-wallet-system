@@ -1,16 +1,16 @@
 import { Paper, TextInput, Button, Title, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import type { UseFormReturnType } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { IconGift } from '@tabler/icons-react';
+import { usePromoCodeMutation } from '../../hooks/mutations/useWalletMutations';
+import { useWalletStore } from '../../store/useWalletStore';
+import { notifications } from '@mantine/notifications';
+import { formatEUR } from '../../utils/currency';
+import { extractErrorMessage } from '../../utils/errorMessage';
 
-interface PromoCodeFormProps {
-  isLoading: boolean;
-  onSubmit: (values: { code: string }, form: UseFormReturnType<{ code: string }>) => void;
-}
-
-export const PromoCodeForm = ({ isLoading, onSubmit }: PromoCodeFormProps) => {
+export const PromoCodeForm = () => {
   const { t } = useTranslation();
+  const promoMutation = usePromoCodeMutation();
 
   const form = useForm({
     initialValues: { code: '' },
@@ -20,7 +20,36 @@ export const PromoCodeForm = ({ isLoading, onSubmit }: PromoCodeFormProps) => {
   });
 
   const handleSubmit = form.onSubmit((values) => {
-    onSubmit(values, form);
+    promoMutation.mutate(values, {
+      onSuccess: (data) => {
+        form.reset();
+        useWalletStore.getState().setBalance(data.balance);
+        notifications.show({
+          title: t('success'),
+          message: `${t('promoRedeemed')} +${formatEUR(data.amount)}`,
+          color: 'green',
+        });
+      },
+      onError: (error) => {
+        const backendMessage = extractErrorMessage(error, t('failedToRedeemPromo'));
+        let message = backendMessage;
+        
+        if (backendMessage === "Invalid promotional code") {
+          message = t('invalidPromoCode');
+        } else if (backendMessage === "This code has already been redeemed") {
+          message = t('promoAlreadyRedeemed');
+        } else if (backendMessage === "Please enter a promo code") {
+          message = t('pleaseEnterPromoCode');
+        }
+
+        form.setFieldError('code', `${message}: ${values.code}`);
+        notifications.show({
+          title: t('error'),
+          message,
+          color: 'red',
+        });
+      },
+    });
   });
 
   return (
@@ -38,7 +67,7 @@ export const PromoCodeForm = ({ isLoading, onSubmit }: PromoCodeFormProps) => {
             type="submit"
             variant="light"
             color="green"
-            loading={isLoading}
+            loading={promoMutation.isPending}
             leftSection={<IconGift size={18} />}
           >
             {t('redeem')}
