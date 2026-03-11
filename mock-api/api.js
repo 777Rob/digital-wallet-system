@@ -4,10 +4,11 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const http = require("http");
+const path = require("path");
 const { Server } = require("socket.io");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -473,6 +474,17 @@ app.use(
     })
   )
 );
+
+// Serve the built frontend in production
+const frontendPath = path.join(__dirname, "..", "app", "dist");
+app.use(express.static(frontendPath));
+app.get("*", (req, res, next) => {
+  // Only serve index.html for non-API routes
+  if (req.path.startsWith("/register") && req.method === "POST") return next();
+  res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+    if (err) next();
+  });
+});
 
 server.listen(port, () =>
   console.log(`Listening: http://localhost:${port}! ✨👋🌍`)

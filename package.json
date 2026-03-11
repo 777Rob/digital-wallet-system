@@ -1,0 +1,10 @@
+{
+  "name": "digital-wallet-system",
+  "private": true,
+  "scripts": {
+    "build": "cd app && npm install && npm run build && cd ../mock-api && npm install",
+    "start": "cd mock-api && node api.js",
+    "dev:api": "cd mock-api && npm start",
+    "dev:app": "cd app && npm run dev"
+  }
+}
