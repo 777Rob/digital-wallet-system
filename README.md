@@ -59,6 +59,15 @@ Digital-Wallet-System/
 
 ## Getting Started
 
+### Why two APIs (`mock-api` vs `api`)?
+
+This project contains two versions of the backend:
+
+1. **`mock-api/` (Use this locally)**: This is the full-featured Express.js server that includes Socket.IO for real-time WebSocket balance updates. It is designed for your local development experience.
+2. **`api/` (Production / Vercel only)**: Since Vercel Serverless Functions do not support stateful WebSockets, this is a stripped-down version of the API used solely for Vercel deployment. In production, the frontend falls back to HTTP polling.
+
+**For local development, you should always use the `mock-api`.**
+
 ### Prerequisites
 
 - Node.js ≥ 18
