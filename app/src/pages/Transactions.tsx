@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { Container, Title, Table, Pagination, Group, Select, TextInput, Badge, Loader, Text, Center } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
-import { formatEUR } from '../utils/currency';
 import { useTransactions } from '../hooks/queries/useTransactions';
+import { TransactionAmountCell } from '../components/common/TransactionAmountCell';
+
+const TRANSACTION_TYPE_COLOR: Record<string, string> = {
+  win: 'green',
+  bet: 'blue',
+  cancel: 'gray',
+};
 
 export const Transactions = () => {
   const { t } = useTranslation();
@@ -24,7 +30,7 @@ export const Transactions = () => {
     return (
       <Container mt="xl">
         <Title order={2} mb="xl">{t('transactions')}</Title>
-        <Text color="red">Failed to load transactions</Text>
+        <Text c="red">{t('failedToLoadTransactions')}</Text>
       </Container>
     );
   }
@@ -40,14 +46,14 @@ export const Transactions = () => {
           onChange={setType}
           data={[
             { value: 'all', label: t('all') },
-            { value: 'bet', label: 'Bet' },
-            { value: 'win', label: 'Win' },
-            { value: 'cancel', label: 'Cancel' }
+            { value: 'bet', label: t('bet') },
+            { value: 'win', label: t('win') },
+            { value: 'cancel', label: t('cancel') }
           ]}
           clearable
         />
         <TextInput
-          placeholder="Filter by ID"
+          placeholder={t('filterById')}
           value={idFilter}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIdFilter(event.currentTarget.value)}
         />
@@ -57,7 +63,7 @@ export const Transactions = () => {
         <Center my={50}><Loader /></Center>
       ) : data?.data?.length === 0 ? (
         <Center my={50}>
-          <Text c="dimmed">No transactions found</Text>
+          <Text c="dimmed">{t('noTransactionsFound')}</Text>
         </Center>
       ) : (
         <>
@@ -78,16 +84,12 @@ export const Transactions = () => {
                   </Table.Td>
                   <Table.Td>{new Date(tx.createdAt).toLocaleString()}</Table.Td>
                   <Table.Td>
-                    <Badge color={
-                      tx.type === 'win' ? 'green' 
-                      : tx.type === 'bet' ? 'blue' 
-                      : 'gray'
-                    }>
+                    <Badge color={TRANSACTION_TYPE_COLOR[tx.type] ?? 'gray'}>
                       {tx.type.toUpperCase()}
                     </Badge>
                   </Table.Td>
-                  <Table.Td fw={600} c={tx.type === 'bet' ? 'red' : 'green'}>
-                    {tx.type === 'bet' ? '-' : '+'}{formatEUR(tx.amount)}
+                  <Table.Td>
+                    <TransactionAmountCell amount={tx.amount} type={tx.type} />
                   </Table.Td>
                 </Table.Tr>
               ))}

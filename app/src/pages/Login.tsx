@@ -3,10 +3,10 @@ import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
 import { Link, useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 import { useWalletStore } from '../store/useWalletStore';
 import { useLoginMutation } from '../hooks/mutations/useAuthMutations';
+import { extractErrorMessage } from '../utils/errorMessage';
 import { IconWallet } from '@tabler/icons-react';
 
 export const Login = () => {
@@ -36,14 +36,10 @@ export const Login = () => {
         setCurrency(data.currency);
         navigate('/dashboard');
       },
-      onError: (error: Error | AxiosError) => {
-        let message = 'Login failed';
-        if ('isAxiosError' in error && error.response?.data) {
-          message = (error.response.data as any).message || message;
-        }
+      onError: (error) => {
         notifications.show({
-          title: 'Error',
-          message,
+          title: t('error'),
+          message: extractErrorMessage(error, t('loginFailed')),
           color: 'red',
         });
       }
@@ -57,7 +53,7 @@ export const Login = () => {
           <IconWallet size={36} className="wallet-logo-icon" />
           <Text fw={700} size="xl">QuestWallet</Text>
         </Group>
-        <Title ta="center" order={2} mb="xl">Welcome Back.</Title>
+        <Title ta="center" order={2} mb="xl">{t('welcomeBack')}</Title>
         <form onSubmit={handleSubmit}>
           <Stack>
             <TextInput
@@ -86,4 +82,3 @@ export const Login = () => {
     </Container>
   );
 };
-

@@ -4,21 +4,21 @@ import { useWalletStore } from '../store/useWalletStore';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
 import { useRecentBets } from '../hooks/queries/useBets';
-import { useTransactions } from '../hooks/queries/useTransactions';
+import { useRecentTransactions } from '../hooks/queries/useRecentTransactions';
 import { usePlaceBetMutation } from '../hooks/mutations/useBetMutations';
 import { useCoinFlipAnimation } from '../hooks/useCoinFlipAnimation';
+import { extractErrorMessage } from '../utils/errorMessage';
 import { BetForm } from '../components/Dashboard/BetForm';
 import { CoinFlipResult } from '../components/Dashboard/CoinFlipResult';
 import { RecentBetsTable } from '../components/Dashboard/RecentBetsTable';
 import { RecentTransactionsTable } from '../components/Dashboard/RecentTransactionsTable';
-import { AxiosError } from 'axios';
 
 export const Dashboard = () => {
   const { t } = useTranslation();
   const balance = useWalletStore((state) => state.balance);
   
   const { data: recentBets, isLoading: isLoadingBets } = useRecentBets(5);
-  const { data: recentTransactions, isLoading: isLoadingTransactions } = useTransactions({ limit: 5 });
+  const { data: recentTransactions, isLoading: isLoadingTransactions } = useRecentTransactions(5);
   const mutation = usePlaceBetMutation();
 
   const {
@@ -29,9 +29,9 @@ export const Dashboard = () => {
     cancelAnimation
   } = useCoinFlipAnimation((data) => {
     notifications.show({
-      title: t('success'),
+      title: data.winAmount ? t('success') : t('result'),
       message: data.winAmount ? `${t('winMessage')} ${formatEUR(data.winAmount)}!` : t('lostMessage'),
-      color: data.winAmount ? 'green' : 'gray',
+      color: data.winAmount ? 'green' : 'red',
     });
   });
 
@@ -41,15 +41,11 @@ export const Dashboard = () => {
       onSuccess: (data) => {
         finishAnimation(data);
       },
-      onError: (error: Error | AxiosError) => {
+      onError: (error) => {
         cancelAnimation();
-        let message = t('failedToPlaceBet');
-        if ('isAxiosError' in error && error.response?.data) {
-          message = (error.response.data as any).message || message;
-        }
         notifications.show({
           title: t('error'),
-          message,
+          message: extractErrorMessage(error, t('failedToPlaceBet')),
           color: 'red',
         });
       }

@@ -48,7 +48,7 @@ export const BetForm = ({ balance, isLoading, onSubmit }: BetFormProps) => {
           loading={isLoading}
           disabled={isLoading || balance < 1}
         >
-          {isLoading ? 'Flipping Coin...' : t('bet')}
+          {isLoading ? t('flippingCoin') : t('bet')}
         </Button>
       </form>
     </Paper>

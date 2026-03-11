@@ -1,7 +1,8 @@
-import { Paper, Center, Loader, Text, Table, Badge, Button, Box } from '@mantine/core';
+import { Paper, Center, Loader, Text, Table, Button, Box } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatEUR } from '../../utils/currency';
+import { BetStatusBadge } from '../common/BetStatusBadge';
 import type { Bet } from '../../types';
 
 interface RecentBetsTableProps {
@@ -34,9 +35,7 @@ export const RecentBetsTable = ({ bets, isLoading }: RecentBetsTableProps) => {
                 <Table.Td>{new Date(bet.createdAt).toLocaleString()}</Table.Td>
                 <Table.Td>{formatEUR(bet.amount)}</Table.Td>
                 <Table.Td>
-                  <Badge color={bet.status === 'win' ? 'green' : bet.status === 'lost' ? 'red' : 'gray'}>
-                    {t(bet.status)}
-                  </Badge>
+                  <BetStatusBadge status={bet.status} />
                 </Table.Td>
               </Table.Tr>
             ))}

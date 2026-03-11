@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Container, Title, Table, Pagination, Group, Select, TextInput, Badge, Button, Loader, Text, Center } from '@mantine/core';
+import { Container, Title, Table, Pagination, Group, Select, TextInput, Button, Loader, Text, Center } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
 import { useBets } from '../hooks/queries/useBets';
 import { useCancelBetMutation } from '../hooks/mutations/useBetMutations';
-import { AxiosError } from 'axios';
+import { extractErrorMessage } from '../utils/errorMessage';
+import { BetStatusBadge } from '../components/common/BetStatusBadge';
 
 export const MyBets = () => {
   const { t } = useTranslation();
@@ -28,14 +29,10 @@ export const MyBets = () => {
   const handleCancelBet = (id: string) => {
     cancelMutation.mutate(id, {
       onSuccess: () => {
-        notifications.show({ title: 'Success', message: 'Bet cancelled successfully', color: 'green' });
+        notifications.show({ title: t('success'), message: t('betCancelledSuccess'), color: 'green' });
       },
-      onError: (error: Error | AxiosError) => {
-        let message = 'Failed to cancel bet';
-        if ('isAxiosError' in error && error.response?.data) {
-          message = (error.response.data as any).message || message;
-        }
-        notifications.show({ title: 'Error', message, color: 'red' });
+      onError: (error) => {
+        notifications.show({ title: t('error'), message: extractErrorMessage(error, t('failedToCancelBet')), color: 'red' });
       }
     });
   };
@@ -44,7 +41,7 @@ export const MyBets = () => {
     return (
       <Container mt="xl">
         <Title order={2} mb="xl">{t('myBets')}</Title>
-        <Text color="red">Failed to load bets</Text>
+        <Text c="red">{t('failedToLoadBets')}</Text>
       </Container>
     );
   }
@@ -67,7 +64,7 @@ export const MyBets = () => {
           clearable
         />
         <TextInput
-          placeholder="Filter by ID"
+          placeholder={t('filterById')}
           value={idFilter}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIdFilter(event.currentTarget.value)}
         />
@@ -77,7 +74,7 @@ export const MyBets = () => {
         <Center my={50}><Loader /></Center>
       ) : data?.data?.length === 0 ? (
         <Center my={50}>
-          <Text c="dimmed">No bets found</Text>
+          <Text c="dimmed">{t('noBetsFound')}</Text>
         </Center>
       ) : (
         <>
@@ -102,13 +99,7 @@ export const MyBets = () => {
                   <Table.Td>{formatEUR(bet.amount)}</Table.Td>
                   <Table.Td>{bet.winAmount ? formatEUR(bet.winAmount) : '-'}</Table.Td>
                   <Table.Td>
-                    <Badge color={
-                      bet.status === 'win' ? 'green' 
-                      : bet.status === 'lost' ? 'red' 
-                      : 'gray'
-                    }>
-                      {t(bet.status)}
-                    </Badge>
+                    <BetStatusBadge status={bet.status} />
                   </Table.Td>
                   <Table.Td>
                     <Button 

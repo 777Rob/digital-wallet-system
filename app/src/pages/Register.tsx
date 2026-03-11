@@ -3,8 +3,8 @@ import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
 import { Link, useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
 import { useRegisterMutation } from '../hooks/mutations/useAuthMutations';
+import { extractErrorMessage } from '../utils/errorMessage';
 import { IconWallet } from '@tabler/icons-react';
 
 export const Register = () => {
@@ -32,20 +32,16 @@ export const Register = () => {
     mutation.mutate(values, {
       onSuccess: () => {
         notifications.show({
-          title: 'Success',
-          message: 'Registration successful! Please login.',
+          title: t('success'),
+          message: t('registrationSuccess'),
           color: 'green',
         });
         navigate('/login');
       },
-      onError: (error: Error | AxiosError) => {
-        let message = 'Registration failed';
-        if ('isAxiosError' in error && error.response?.data) {
-          message = (error.response.data as any).message || message;
-        }
+      onError: (error) => {
         notifications.show({
-          title: 'Error',
-          message,
+          title: t('error'),
+          message: extractErrorMessage(error, t('registrationFailed')),
           color: 'red',
         });
       }
@@ -59,7 +55,7 @@ export const Register = () => {
           <IconWallet size={36} className="wallet-logo-icon" />
           <Text fw={700} size="xl">QuestWallet</Text>
         </Group>
-        <Title ta="center" order={2} mb="xl">Create Account.</Title>
+        <Title ta="center" order={2} mb="xl">{t('createAccount')}</Title>
         <form onSubmit={handleSubmit}>
           <Stack>
             <TextInput
@@ -100,4 +96,3 @@ export const Register = () => {
     </Container>
   );
 };
-

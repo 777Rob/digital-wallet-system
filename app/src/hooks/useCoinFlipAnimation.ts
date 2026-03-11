@@ -31,6 +31,6 @@ export const useCoinFlipAnimation = (
     startAnimation,
     finishAnimation,
     cancelAnimation,
-    setResult, // Exported to allow resetting the result state
+    setResult,
   };
 };

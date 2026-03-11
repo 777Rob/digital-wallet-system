@@ -2,6 +2,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
 }
 
 #root {
@@ -62,10 +63,6 @@ body {
   background: radial-gradient(circle at 30% 30%, #ff8b8b 0%, #cd5c5c 80%, #8b0000 100%);
   border-color: #ffb6c1 #8b0000 #8b0000 #ffb6c1;
   box-shadow: 0 0 40px rgba(139, 0, 0, 0.6);
-}
-
-body {
-  font-family: 'Inter', sans-serif;
 }
 
 /* Custom Mantine Theme Overrides */

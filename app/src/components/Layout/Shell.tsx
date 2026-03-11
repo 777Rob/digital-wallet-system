@@ -1,47 +1,33 @@
-import React from 'react';
-import { AppShell, Burger, Group, Title, Text, ActionIcon, useMantineColorScheme, useComputedColorScheme, Menu, NavLink } from '@mantine/core';
+import { useMemo } from 'react';
+import { AppShell, Burger, Group, Title, Text, ActionIcon, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Outlet, NavLink as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  IconSun, 
-  IconMoon, 
-  IconLogout, 
-  IconWorld, 
-  IconCoin, 
-  IconTicket, 
-  IconHistory, 
-  IconWallet 
-} from '@tabler/icons-react';
+import { IconLogout, IconCoin, IconTicket, IconHistory, IconWallet } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useWalletStore } from '../../store/useWalletStore';
 import { useWalletWs } from '../../hooks/useWalletWs';
 import { formatEUR } from '../../utils/currency';
+import { LanguageMenu } from '../common/LanguageMenu';
+import { ColorSchemeToggle } from '../common/ColorSchemeToggle';
 
 export const Shell = () => {
   const [opened, { toggle }] = useDisclosure();
-  const { setColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
   const logout = useAuthStore((state) => state.logout);
   const balance = useWalletStore((state) => state.balance);
 
-  // Initialize WebSockets
   useWalletWs();
-
-  const toggleColorScheme = () => {
-    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
-  };
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  const navItems = React.useMemo(() => [
+  const navItems = useMemo(() => [
     { to: '/dashboard', label: t('bet'), icon: <IconCoin size={24} stroke={1.5} /> },
     { to: '/my-bets', label: t('myBets'), icon: <IconTicket size={24} stroke={1.5} /> },
     { to: '/transactions', label: t('transactions'), icon: <IconHistory size={24} stroke={1.5} /> },
@@ -71,22 +57,9 @@ export const Shell = () => {
             <Text fw={700} c="green" size="lg">
               {formatEUR(balance)}
             </Text>
-            
-            <Menu shadow="md" width={150}>
-              <Menu.Target>
-                <ActionIcon variant="default" size="lg">
-                  <IconWorld size={18} />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item onClick={() => i18n.changeLanguage('en')}>English</Menu.Item>
-                <Menu.Item onClick={() => i18n.changeLanguage('lt')}>Lietuvių</Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
 
-            <ActionIcon variant="default" onClick={toggleColorScheme} size="lg">
-              {computedColorScheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
-            </ActionIcon>
+            <LanguageMenu />
+            <ColorSchemeToggle />
 
             <ActionIcon variant="default" color="red" onClick={handleLogout} size="lg">
               <IconLogout size={18} />
@@ -105,7 +78,7 @@ export const Shell = () => {
             leftSection={item.icon}
             active={location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)}
             onClick={() => {
-              if (opened) toggle(); // Close on mobile click
+              if (opened) toggle();
             }}
             variant="light"
             color="green"
