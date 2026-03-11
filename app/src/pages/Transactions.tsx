@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Container, Title, Table, Pagination, Group, Select, TextInput, Badge, Loader, Text, Center } from '@mantine/core';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
-import { apiClient } from '../api/client';
 import { formatEUR } from '../utils/currency';
+import { useTransactions } from '../hooks/queries/useTransactions';
 
 export const Transactions = () => {
   const { t } = useTranslation();
@@ -14,19 +13,11 @@ export const Transactions = () => {
   const [debouncedId] = useDebouncedValue(idFilter, 500);
   const limit = 10;
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['my-transactions', page, type, debouncedId],
-    queryFn: async () => {
-      const response = await apiClient.get('/my-transactions', {
-        params: {
-          page,
-          limit,
-          ...(type && type !== 'all' ? { type } : {}),
-          ...(debouncedId ? { id: debouncedId } : {})
-        }
-      });
-      return response.data;
-    }
+  const { data, isLoading, error } = useTransactions({
+    page,
+    limit,
+    type,
+    id: debouncedId,
   });
 
   if (error) {
@@ -58,7 +49,7 @@ export const Transactions = () => {
         <TextInput
           placeholder="Filter by ID"
           value={idFilter}
-          onChange={(event: any) => setIdFilter(event.currentTarget.value)}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIdFilter(event.currentTarget.value)}
         />
       </Group>
 
@@ -80,7 +71,7 @@ export const Transactions = () => {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {data?.data.map((tx: any) => (
+              {data?.data.map((tx) => (
                 <Table.Tr key={tx.id}>
                   <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                     <Text size="xs" c="dimmed">{tx.id}</Text>
@@ -103,10 +94,10 @@ export const Transactions = () => {
             </Table.Tbody>
           </Table>
 
-          {data?.total > limit && (
+          {data && data.total > limit && (
             <Group justify="center" mt="xl">
               <Pagination 
-                total={Math.ceil((data?.total || 0) / limit)} 
+                total={Math.ceil(data.total / limit)} 
                 value={page} 
                 onChange={setPage} 
               />

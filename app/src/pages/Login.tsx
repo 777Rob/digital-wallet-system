@@ -1,12 +1,12 @@
 import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@tanstack/react-query';
-import { apiClient } from '../api/client';
-import { useAuthStore } from '../store/useAuthStore';
 import { notifications } from '@mantine/notifications';
 import { Link, useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
+import { useAuthStore } from '../store/useAuthStore';
 import { useWalletStore } from '../store/useWalletStore';
+import { useLoginMutation } from '../hooks/mutations/useAuthMutations';
 
 export const Login = () => {
   const { t } = useTranslation();
@@ -25,24 +25,28 @@ export const Login = () => {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (values: typeof form.values) => {
-      const response = await apiClient.post('/login', values);
-      return response.data;
-    },
-    onSuccess: (data: any) => {
-      setAuth(data.accessToken, { id: data.id, name: data.name });
-      setBalance(data.balance);
-      setCurrency(data.currency);
-      navigate('/dashboard');
-    },
-    onError: (error: any) => {
-      notifications.show({
-        title: 'Error',
-        message: error.response?.data?.message || 'Login failed',
-        color: 'red',
-      });
-    },
+  const mutation = useLoginMutation();
+
+  const handleSubmit = form.onSubmit((values) => {
+    mutation.mutate(values, {
+      onSuccess: (data) => {
+        setAuth(data.accessToken, { id: data.id, name: data.name });
+        setBalance(data.balance);
+        setCurrency(data.currency);
+        navigate('/dashboard');
+      },
+      onError: (error: Error | AxiosError) => {
+        let message = 'Login failed';
+        if ('isAxiosError' in error && error.response?.data) {
+          message = (error.response.data as any).message || message;
+        }
+        notifications.show({
+          title: 'Error',
+          message,
+          color: 'red',
+        });
+      }
+    });
   });
 
   return (
@@ -50,7 +54,7 @@ export const Login = () => {
       <Title ta="center">{t('login')}</Title>
       
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <form onSubmit={form.onSubmit((values: any) => mutation.mutate(values))}>
+        <form onSubmit={handleSubmit}>
           <Stack>
             <TextInput
               label={t('email')}

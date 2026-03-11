@@ -1,50 +1,44 @@
 import { useState } from 'react';
 import { Container, Title, Table, Pagination, Group, Select, TextInput, Badge, Button, Loader, Text, Center } from '@mantine/core';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { apiClient } from '../api/client';
 import { formatEUR } from '../utils/currency';
+import { useBets } from '../hooks/queries/useBets';
+import { useCancelBetMutation } from '../hooks/mutations/useBetMutations';
+import { AxiosError } from 'axios';
 
 export const MyBets = () => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<string | null>(null);
   const [idFilter, setIdFilter] = useState('');
   const [debouncedId] = useDebouncedValue(idFilter, 500);
   const limit = 10;
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['my-bets', page, status, debouncedId],
-    queryFn: async () => {
-      const response = await apiClient.get('/my-bets', {
-        params: {
-          page,
-          limit,
-          ...(status && status !== 'all' ? { status } : {}),
-          ...(debouncedId ? { id: debouncedId } : {})
-        }
-      });
-      return response.data;
-    }
+  const { data, isLoading, error } = useBets({
+    page,
+    limit,
+    status,
+    id: debouncedId,
   });
 
-  const cancelMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await apiClient.delete(`/my-bet/${id}`);
-      return response.data;
-    },
-    onSuccess: () => {
-      notifications.show({ title: 'Success', message: 'Bet cancelled successfully', color: 'green' });
-      queryClient.invalidateQueries({ queryKey: ['my-bets'] });
-      queryClient.invalidateQueries({ queryKey: ['my-transactions'] }); // update transactions as well
-    },
-    onError: (error: any) => {
-      notifications.show({ title: 'Error', message: error.response?.data?.message || 'Failed to cancel bet', color: 'red' });
-    }
-  });
+  const cancelMutation = useCancelBetMutation();
+
+  const handleCancelBet = (id: string) => {
+    cancelMutation.mutate(id, {
+      onSuccess: () => {
+        notifications.show({ title: 'Success', message: 'Bet cancelled successfully', color: 'green' });
+      },
+      onError: (error: Error | AxiosError) => {
+        let message = 'Failed to cancel bet';
+        if ('isAxiosError' in error && error.response?.data) {
+          message = (error.response.data as any).message || message;
+        }
+        notifications.show({ title: 'Error', message, color: 'red' });
+      }
+    });
+  };
 
   if (error) {
     return (
@@ -75,7 +69,7 @@ export const MyBets = () => {
         <TextInput
           placeholder="Filter by ID"
           value={idFilter}
-          onChange={(event: any) => setIdFilter(event.currentTarget.value)}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIdFilter(event.currentTarget.value)}
         />
       </Group>
 
@@ -99,7 +93,7 @@ export const MyBets = () => {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {data?.data.map((bet: any) => (
+              {data?.data.map((bet) => (
                 <Table.Tr key={bet.id}>
                   <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                     <Text size="xs" c="dimmed">{bet.id}</Text>
@@ -122,7 +116,7 @@ export const MyBets = () => {
                       variant="light" 
                       color="red"
                       disabled={bet.status === 'canceled' || bet.status === 'win' || cancelMutation.isPending}
-                      onClick={() => cancelMutation.mutate(bet.id)}
+                      onClick={() => handleCancelBet(bet.id)}
                     >
                       {t('cancelBet')}
                     </Button>
@@ -132,10 +126,10 @@ export const MyBets = () => {
             </Table.Tbody>
           </Table>
 
-          {data?.total > limit && (
+          {data && data.total > limit && (
             <Group justify="center" mt="xl">
               <Pagination 
-                total={Math.ceil((data?.total || 0) / limit)} 
+                total={Math.ceil(data.total / limit)} 
                 value={page} 
                 onChange={setPage} 
               />

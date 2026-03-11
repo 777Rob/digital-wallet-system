@@ -8,7 +8,7 @@ interface WalletState {
   setCurrency: (currency: string) => void;
 }
 
-const storeFn: StateCreator<WalletState> = (set: any) => ({
+const storeFn: StateCreator<WalletState> = (set) => ({
   balance: 0,
   currency: "EUR",
   setBalance: (balance: number) => set({ balance }),

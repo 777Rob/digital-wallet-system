@@ -1,10 +1,10 @@
 import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@tanstack/react-query';
-import { apiClient } from '../api/client';
 import { notifications } from '@mantine/notifications';
 import { Link, useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
+import { useRegisterMutation } from '../hooks/mutations/useAuthMutations';
 
 export const Register = () => {
   const { t } = useTranslation();
@@ -21,30 +21,34 @@ export const Register = () => {
       name: (val: string) => (val.trim().length > 0 ? null : t('required')),
       email: (val: string) => (/^\S+@\S+$/.test(val) ? null : t('invalidEmail')),
       password: (val: string) => (val.length < 6 ? t('required') : null),
-      confirmPassword: (val: string, values: any) => (val !== values.password ? t('passwordsDontMatch') : null),
+      confirmPassword: (val: string, values: { password?: string }) => (val !== values.password ? t('passwordsDontMatch') : null),
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (values: typeof form.values) => {
-      const response = await apiClient.post('/register', values);
-      return response.data;
-    },
-    onSuccess: () => {
-      notifications.show({
-        title: 'Success',
-        message: 'Registration successful! Please login.',
-        color: 'green',
-      });
-      navigate('/login');
-    },
-    onError: (error: any) => {
-      notifications.show({
-        title: 'Error',
-        message: error.response?.data?.message || 'Registration failed',
-        color: 'red',
-      });
-    },
+  const mutation = useRegisterMutation();
+
+  const handleSubmit = form.onSubmit((values) => {
+    mutation.mutate(values, {
+      onSuccess: () => {
+        notifications.show({
+          title: 'Success',
+          message: 'Registration successful! Please login.',
+          color: 'green',
+        });
+        navigate('/login');
+      },
+      onError: (error: Error | AxiosError) => {
+        let message = 'Registration failed';
+        if ('isAxiosError' in error && error.response?.data) {
+          message = (error.response.data as any).message || message;
+        }
+        notifications.show({
+          title: 'Error',
+          message,
+          color: 'red',
+        });
+      }
+    });
   });
 
   return (
@@ -52,7 +56,7 @@ export const Register = () => {
       <Title ta="center">{t('register')}</Title>
       
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <form onSubmit={form.onSubmit((values: any) => mutation.mutate(values))}>
+        <form onSubmit={handleSubmit}>
           <Stack>
             <TextInput
               label={t('name')}
