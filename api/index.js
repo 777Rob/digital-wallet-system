@@ -4,11 +4,12 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 
-const app = express();
-const port = 3000;
+const apiApp = express();
+apiApp.use(cors());
+apiApp.use(express.json());
 
-app.use(cors());
-app.use(express.json());
+const app = express.Router();
+apiApp.use("/api", app);
 
 const players = [];
 
@@ -456,7 +457,7 @@ app.use(
   )
 );
 
-module.exports = app;
+module.exports = apiApp;
 
 /**
  * @swagger
