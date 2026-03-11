@@ -1,4 +1,4 @@
-import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack } from '@mantine/core';
+import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack, ThemeIcon } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
@@ -7,6 +7,7 @@ import { AxiosError } from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 import { useWalletStore } from '../store/useWalletStore';
 import { useLoginMutation } from '../hooks/mutations/useAuthMutations';
+import { IconWallet } from '@tabler/icons-react';
 
 export const Login = () => {
   const { t } = useTranslation();
@@ -50,10 +51,15 @@ export const Login = () => {
   });
 
   return (
-    <Container size={420} my={40}>
-      <Title ta="center">{t('login')}</Title>
+    <Container size={420} w="100%">
+      <Stack align="center" mb="lg">
+        <ThemeIcon size={64} radius="xl" variant="light" color="green">
+          <IconWallet size={32} />
+        </ThemeIcon>
+        <Title ta="center">{t('login')}</Title>
+      </Stack>
       
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder shadow="xl" p={40} radius="md">
         <form onSubmit={handleSubmit}>
           <Stack>
             <TextInput
@@ -73,8 +79,8 @@ export const Login = () => {
             </Button>
           </Stack>
         </form>
-        <Text c="dimmed" size="sm" ta="center" mt={15}>
-          <Anchor component={Link} to="/register" size="sm">
+        <Text c="dimmed" size="sm" ta="center" mt={20}>
+          <Anchor component={Link} to="/register" size="sm" fw={500}>
             {t('noAccount')}
           </Anchor>
         </Text>
@@ -82,3 +88,4 @@ export const Login = () => {
     </Container>
   );
 };
+

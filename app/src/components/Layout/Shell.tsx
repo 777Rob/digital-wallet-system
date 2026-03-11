@@ -62,13 +62,13 @@ export const Shell = () => {
           <Group>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
             <Group gap="sm">
-              <IconWallet size={28} color="var(--mantine-color-blue-filled)" />
+              <IconWallet size={28} color="var(--mantine-color-green-filled)" />
               <Title order={3}>Wallet.app</Title>
             </Group>
           </Group>
 
           <Group>
-            <Text fw={700} c="blue" size="lg">
+            <Text fw={700} c="green" size="lg">
               {formatEUR(balance)}
             </Text>
             

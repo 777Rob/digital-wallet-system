@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
+import { AuthLayout } from './components/Auth/AuthLayout';
 import { Shell } from './components/Layout/Shell';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -15,14 +16,16 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public Routes */}
-        <Route 
-          path="/login" 
-          element={token ? <Navigate to="/dashboard" replace /> : <Login />} 
-        />
-        <Route 
-          path="/register" 
-          element={token ? <Navigate to="/dashboard" replace /> : <Register />} 
-        />
+        <Route element={<AuthLayout />}>
+          <Route 
+            path="/login" 
+            element={token ? <Navigate to="/dashboard" replace /> : <Login />} 
+          />
+          <Route 
+            path="/register" 
+            element={token ? <Navigate to="/dashboard" replace /> : <Register />} 
+          />
+        </Route>
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>

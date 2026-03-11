@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
 });
 
 const theme = createTheme({
-  primaryColor: 'blue',
+  primaryColor: 'green',
 });
 
 createRoot(document.getElementById('root')!).render(
