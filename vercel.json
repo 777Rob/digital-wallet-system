@@ -1,8 +1,23 @@
 {
-  "buildCommand": "cd app && npm run build",
-  "outputDirectory": "app/dist",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/package.json",
+      "use": "@vercel/static-build"
+    },
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app/dist/$1"
+    }
   ]
 }
