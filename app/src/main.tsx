@@ -20,6 +20,20 @@ const queryClient = new QueryClient({
 
 const theme = createTheme({
   primaryColor: 'green',
+  colors: {
+    green: [
+      '#e0fbef',
+      '#baf3d6',
+      '#8feaba',
+      '#61e09c',
+      '#37d781',
+      '#1ac365', // 5
+      '#198f5d', // 6
+      '#147055', // 7 
+      '#0e503d', // 8
+      '#093327', // 9
+    ]
+  }
 });
 
 createRoot(document.getElementById('root')!).render(

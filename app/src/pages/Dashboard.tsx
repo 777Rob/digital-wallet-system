@@ -1,5 +1,5 @@
 import { Container, Title, SimpleGrid, Paper, Stack, Text } from '@mantine/core';
-
+import { useTranslation } from 'react-i18next';
 import { useWalletStore } from '../store/useWalletStore';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
@@ -12,6 +12,7 @@ import { RecentBetsTable } from '../components/Dashboard/RecentBetsTable';
 import { AxiosError } from 'axios';
 
 export const Dashboard = () => {
+  const { t } = useTranslation();
   const balance = useWalletStore((state) => state.balance);
   
   const { data: recentBets, isLoading: isLoadingBets } = useRecentBets(5);
@@ -25,8 +26,8 @@ export const Dashboard = () => {
     cancelAnimation
   } = useCoinFlipAnimation((data) => {
     notifications.show({
-      title: 'Success',
-      message: data.winAmount ? `You won ${formatEUR(data.winAmount)}!` : 'You lost this bet.',
+      title: t('success'),
+      message: data.winAmount ? `${t('winMessage')} ${formatEUR(data.winAmount)}!` : t('lostMessage'),
       color: data.winAmount ? 'green' : 'gray',
     });
   });
@@ -39,12 +40,12 @@ export const Dashboard = () => {
       },
       onError: (error: Error | AxiosError) => {
         cancelAnimation();
-        let message = 'Failed to place bet';
+        let message = t('failedToPlaceBet');
         if ('isAxiosError' in error && error.response?.data) {
           message = (error.response.data as any).message || message;
         }
         notifications.show({
-          title: 'Error',
+          title: t('error'),
           message,
           color: 'red',
         });
@@ -54,7 +55,7 @@ export const Dashboard = () => {
 
   return (
     <Container size="lg" mt="xl">
-      <Title order={2} mb="xl">Dashboard</Title>
+      <Title order={2} mb="xl">{t('dashboard')}</Title>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mb="xl">
         <BetForm 
@@ -67,7 +68,7 @@ export const Dashboard = () => {
             <Title order={1} c="green" style={{ fontSize: '3rem' }}>
               {formatEUR(balance)}
             </Title>
-            <Text c="dimmed" size="lg" fw={500}>Global Balance</Text>
+            <Text c="dimmed" size="lg" fw={500}>{t('globalBalance')}</Text>
           </Stack>
         </Paper>
       </SimpleGrid>
@@ -76,7 +77,7 @@ export const Dashboard = () => {
         <CoinFlipResult isFlipping={isFlipping} result={result} />
       )}
 
-      <Title order={3} mt="xl" mb="md">Recent Bets</Title>
+      <Title order={3} mt="xl" mb="md">{t('recentBets')}</Title>
       <RecentBetsTable bets={recentBets?.data} isLoading={isLoadingBets} />
     </Container>
   );

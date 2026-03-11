@@ -55,9 +55,9 @@ export const Register = () => {
   return (
     <Container size={420} w="100%">
       <Paper withBorder shadow="xl" p={40} radius="md">
-        <Group justify="center" gap="xs" mb="md">
-          <IconWallet size={24} color="var(--mantine-color-green-filled)" />
-          <Text fw={600} size="sm">QuestWallet</Text>
+        <Group justify="center" gap="xs" mb="xl">
+          <IconWallet size={36} className="wallet-logo-icon" />
+          <Text fw={700} size="xl">QuestWallet</Text>
         </Group>
         <Title ta="center" order={2} mb="xl">Create Account.</Title>
         <form onSubmit={handleSubmit}>

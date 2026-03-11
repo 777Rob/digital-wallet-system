@@ -35,7 +35,7 @@ export const CoinFlipResult = ({ isFlipping, result }: CoinFlipResultProps) => {
 
       {!isFlipping && result && (
         <Stack align="center" gap="xs">
-          <Text fw={500}>Result</Text>
+          <Text fw={500}>{t('result')}</Text>
           <Badge color={result.winAmount ? "green" : "red"} size="lg">
             {result.winAmount ? t('win') : t('lost')}
           </Badge>

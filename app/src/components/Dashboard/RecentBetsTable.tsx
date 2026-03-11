@@ -16,7 +16,7 @@ export const RecentBetsTable = ({ bets, isLoading }: RecentBetsTableProps) => {
       {isLoading ? (
         <Center p="xl"><Loader /></Center>
       ) : !bets || bets.length === 0 ? (
-        <Center p="xl"><Text c="dimmed">No recent bets</Text></Center>
+        <Center p="xl"><Text c="dimmed">{t('noRecentBets')}</Text></Center>
       ) : (
         <Table highlightOnHover verticalSpacing="sm">
           <Table.Thead>

@@ -27,7 +27,7 @@ export const BetForm = ({ balance, isLoading, onSubmit }: BetFormProps) => {
 
   return (
     <Paper shadow="sm" p="xl" withBorder className="gradient-card" h="100%">
-      <Title order={3} mb="lg" style={{ color: 'white' }}>Place New Bet</Title>
+      <Title order={3} mb="lg" style={{ color: 'white' }}>{t('placeNewBet')}</Title>
       <form onSubmit={handleSubmit}>
         <NumberInput
           label={t('betAmount')}
@@ -43,7 +43,8 @@ export const BetForm = ({ balance, isLoading, onSubmit }: BetFormProps) => {
           type="submit" 
           fullWidth 
           variant="white"
-          color="green"
+          c="#147055"
+          fw={600}
           loading={isLoading}
           disabled={isLoading || balance < 1}
         >

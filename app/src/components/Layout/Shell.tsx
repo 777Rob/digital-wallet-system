@@ -42,9 +42,9 @@ export const Shell = () => {
   };
 
   const navItems = React.useMemo(() => [
-    { to: '/dashboard', label: t('bet'), icon: <IconCoin size={20} stroke={1.5} /> },
-    { to: '/my-bets', label: t('myBets'), icon: <IconTicket size={20} stroke={1.5} /> },
-    { to: '/transactions', label: t('transactions'), icon: <IconHistory size={20} stroke={1.5} /> },
+    { to: '/dashboard', label: t('bet'), icon: <IconCoin size={24} stroke={1.5} /> },
+    { to: '/my-bets', label: t('myBets'), icon: <IconTicket size={24} stroke={1.5} /> },
+    { to: '/transactions', label: t('transactions'), icon: <IconHistory size={24} stroke={1.5} /> },
   ], [t]);
 
   return (
@@ -62,8 +62,8 @@ export const Shell = () => {
           <Group>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
             <Group gap="sm">
-              <IconWallet size={28} color="var(--mantine-color-green-filled)" />
-              <Title order={3} c="green" style={{ fontFamily: 'Inter, sans-serif' }}>QuestWallet</Title>
+              <IconWallet size={34} className="wallet-logo-icon" />
+              <Title order={2} c="green" style={{ fontFamily: 'Inter, sans-serif' }}>QuestWallet</Title>
             </Group>
           </Group>
 
@@ -109,6 +109,7 @@ export const Shell = () => {
             }}
             variant="light"
             color="green"
+            styles={{ label: { fontSize: '1.05rem' } }}
             style={{ borderRadius: 'var(--mantine-radius-md)', marginBottom: 4, fontWeight: 500 }}
           />
         ))}
