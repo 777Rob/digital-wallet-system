@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useWheel } from '../hooks/useWheel';
 import { notifications } from '@mantine/notifications';
 import { formatEUR } from '../utils/currency';
+import Confetti from 'react-confetti';
 
 const PRIZES = [
   { amount: 0, color: '#ff6b6b', label: '0 EUR' },
@@ -33,6 +34,7 @@ export const WheelOfFortune = () => {
 
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string>('');
 
   // Countdown timer for free spin
@@ -65,15 +67,15 @@ export const WheelOfFortune = () => {
     claimMutation.mutate(undefined, {
       onSuccess: () => {
         notifications.show({
-          title: 'Success',
-          message: 'You claimed your daily free spin!',
+          title: t('success'),
+          message: t('claimSuccess'),
           color: 'green',
         });
       },
       onError: (err: any) => {
         notifications.show({
-          title: 'Error',
-          message: err.message || 'Failed to claim free spin',
+          title: t('error'),
+          message: err.message || t('failedToClaim'),
           color: 'red',
         });
       },
@@ -83,6 +85,7 @@ export const WheelOfFortune = () => {
   const handleSpin = () => {
     if (wheelStatus?.availableSpins === 0 || isSpinning) return;
 
+    setShowConfetti(false);
     setIsSpinning(true);
     spinMutation.mutate(undefined, {
       onSuccess: (data: any) => {
@@ -105,16 +108,17 @@ export const WheelOfFortune = () => {
         setTimeout(() => {
           setIsSpinning(false);
           if (data.wonAmount > 0) {
+            setShowConfetti(true);
             notifications.show({
-              title: 'Congratulations!',
-              message: `You won ${formatEUR(data.wonAmount)}!`,
+              title: t('congratulations'),
+              message: t('wonAmount', { amount: formatEUR(data.wonAmount) }),
               color: 'green',
               icon: <IconGift size={18} />,
             });
           } else {
             notifications.show({
-              title: 'Better luck next time!',
-              message: 'You won 0 EUR.',
+              title: t('betterLuck'),
+              message: t('wonZero'),
               color: 'gray',
             });
           }
@@ -123,8 +127,8 @@ export const WheelOfFortune = () => {
       onError: (err: any) => {
         setIsSpinning(false);
         notifications.show({
-          title: 'Error',
-          message: err.message || 'Failed to spin the wheel',
+          title: t('error'),
+          message: err.message || t('failedToSpin'),
           color: 'red',
         });
       },
@@ -141,18 +145,39 @@ export const WheelOfFortune = () => {
     <Container size="md" py="xl">
       <Stack gap="xl">
         <Group justify="space-between" align="center">
-          <Title order={2}>{t('wheelOfFortune', 'Wheel of Fortune')}</Title>
+          <Title order={2}>{t('wheelOfFortune')}</Title>
           <Badge size="xl" color="green" variant="light">
-            {wheelStatus?.availableSpins || 0} Spins Available
+            {wheelStatus?.availableSpins || 0} {t('spinsAvailable')}
           </Badge>
         </Group>
 
-        <Group align="flex-start" gap="xl">
-          <Card withBorder shadow="sm" radius="md" style={{ flex: 1 }}>
+        <Box
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 'var(--mantine-spacing-xl)',
+            alignItems: 'flex-start',
+          }}
+        >
+          <Card withBorder shadow="sm" radius="md" style={{ flex: '1 1 300px' }}>
             <Stack gap="md" align="center">
-              <Text fw={600} size="lg">Spin to Win</Text>
+              <Text fw={600} size="lg">{t('spinToWin')}</Text>
               
               <Box style={{ position: 'relative', width: 300, height: 300 }}>
+                {showConfetti && (
+                  <Box style={{ position: 'absolute', top: -50, left: -50, width: 400, height: 400, pointerEvents: 'none', zIndex: 100 }}>
+                    <Confetti
+                      width={400}
+                      height={400}
+                      recycle={false}
+                      numberOfPieces={250}
+                      gravity={0.15}
+                      initialVelocityY={10}
+                    />
+                  </Box>
+                )}
+
                 {/* Pointer */}
                 <Box
                   style={{
@@ -216,26 +241,26 @@ export const WheelOfFortune = () => {
                 loading={isSpinning || spinMutation.isPending}
                 disabled={!wheelStatus?.availableSpins || wheelStatus.availableSpins <= 0}
               >
-                SPIN ({wheelStatus?.availableSpins || 0} left)
+                {t('spin')}
               </Button>
             </Stack>
           </Card>
 
-          <Stack style={{ flex: 1 }} gap="md">
+          <Stack style={{ flex: '1 1 300px' }} gap="md">
             <Card withBorder shadow="sm" radius="md">
               <Stack gap="sm">
                 <Group gap="xs">
                   <IconGift size={24} color="var(--mantine-color-green-6)" />
-                  <Title order={4}>Daily Free Spin</Title>
+                  <Title order={4}>{t('dailyFreeSpin')}</Title>
                 </Group>
                 <Text size="sm" c="dimmed">
-                  Claim one free spin every 24 hours to win up to 1000 EUR.
+                  {t('dailyFreeSpinDesc')}
                 </Text>
                 
                 {timeLeft ? (
                   <Group gap="xs" mt="sm">
                     <IconClock size={16} />
-                    <Text fw={600} c="orange">Available in {timeLeft}</Text>
+                    <Text fw={600} c="orange">{t('availableIn', { time: timeLeft })}</Text>
                   </Group>
                 ) : (
                   <Button 
@@ -245,7 +270,7 @@ export const WheelOfFortune = () => {
                     onClick={handleClaimFreeSpin}
                     loading={claimMutation.isPending}
                   >
-                    Claim Free Spin
+                    {t('claimFreeSpin')}
                   </Button>
                 )}
               </Stack>
@@ -253,14 +278,14 @@ export const WheelOfFortune = () => {
 
             <Card withBorder shadow="sm" radius="md">
               <Stack gap="sm">
-                <Title order={4}>Bet to Earn</Title>
+                <Title order={4}>{t('betToEarn')}</Title>
                 <Text size="sm" c="dimmed">
-                  Earn 1 additional spin for every 1000 EUR you bet in any of our games.
+                  {t('betToEarnDesc')}
                 </Text>
                 
                 <Box mt="sm">
                   <Group justify="space-between" mb={5}>
-                    <Text size="sm" fw={500}>Current Progress</Text>
+                    <Text size="sm" fw={500}>{t('currentProgress')}</Text>
                     <Text size="sm" fw={700}>{formatEUR(wheelStatus?.betAmountTowardsSpin || 0)} / €1,000</Text>
                   </Group>
                   <Progress value={progressPercent} size="lg" radius="xl" color="green" striped animated />
@@ -268,7 +293,7 @@ export const WheelOfFortune = () => {
               </Stack>
             </Card>
           </Stack>
-        </Group>
+        </Box>
       </Stack>
     </Container>
   );

@@ -413,12 +413,12 @@ app.post("/wheel/spin", (req, res) => {
 
   // Define prizes and probabilities
   const prizes = [
-    { amount: 0, prob: 0.5 },
-    { amount: 10, prob: 0.25 },
-    { amount: 50, prob: 0.15 },
-    { amount: 100, prob: 0.08 },
-    { amount: 500, prob: 0.019 },
-    { amount: 1000, prob: 0.001 },
+    { amount: 0, prob: 0.2 },
+    { amount: 10, prob: 0.4 },
+    { amount: 50, prob: 0.25 },
+    { amount: 100, prob: 0.1 },
+    { amount: 500, prob: 0.04 },
+    { amount: 1000, prob: 0.01 },
   ];
 
   const rand = Math.random();
