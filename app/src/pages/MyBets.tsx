@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Title, Table, Pagination, Group, Select, TextInput, Button, Loader, Text, Center } from '@mantine/core';
+import { Container, Title, Table, Pagination, Group, Select, TextInput, Button, Loader, Text, Center, SimpleGrid } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -50,7 +50,7 @@ export const MyBets = () => {
     <Container size="xl" mt="xl">
       <Title order={2} mb="xl">{t('myBets')}</Title>
 
-      <Group mb="md">
+      <SimpleGrid cols={{ base: 1, sm: 2 }} mb="md">
         <Select
           placeholder={t('filterStatus')}
           value={status}
@@ -68,7 +68,7 @@ export const MyBets = () => {
           value={idFilter}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIdFilter(event.currentTarget.value)}
         />
-      </Group>
+      </SimpleGrid>
 
       {isLoading && !data ? (
         <Center my={50}><Loader /></Center>
@@ -78,44 +78,46 @@ export const MyBets = () => {
         </Center>
       ) : (
         <>
-          <Table striped highlightOnHover withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>ID</Table.Th>
-                <Table.Th>{t('date')}</Table.Th>
-                <Table.Th>{t('amount')}</Table.Th>
-                <Table.Th>{t('prize')}</Table.Th>
-                <Table.Th>{t('status')}</Table.Th>
-                <Table.Th></Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {data?.data.map((bet) => (
-                <Table.Tr key={bet.id}>
-                  <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                    <Text size="xs" c="dimmed">{bet.id}</Text>
-                  </Table.Td>
-                  <Table.Td>{new Date(bet.createdAt).toLocaleString()}</Table.Td>
-                  <Table.Td>{formatEUR(bet.amount)}</Table.Td>
-                  <Table.Td>{bet.winAmount ? formatEUR(bet.winAmount) : '-'}</Table.Td>
-                  <Table.Td>
-                    <BetStatusBadge status={bet.status} />
-                  </Table.Td>
-                  <Table.Td>
-                    <Button 
-                      size="xs" 
-                      variant="light" 
-                      color="red"
-                      disabled={bet.status === 'canceled' || bet.status === 'win' || cancelMutation.isPending}
-                      onClick={() => handleCancelBet(bet.id)}
-                    >
-                      {t('cancelBet')}
-                    </Button>
-                  </Table.Td>
+          <Table.ScrollContainer minWidth={600}>
+            <Table striped highlightOnHover withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>ID</Table.Th>
+                  <Table.Th>{t('date')}</Table.Th>
+                  <Table.Th>{t('amount')}</Table.Th>
+                  <Table.Th>{t('prize')}</Table.Th>
+                  <Table.Th>{t('status')}</Table.Th>
+                  <Table.Th></Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {data?.data.map((bet) => (
+                  <Table.Tr key={bet.id}>
+                    <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                      <Text size="xs" c="dimmed">{bet.id}</Text>
+                    </Table.Td>
+                    <Table.Td>{new Date(bet.createdAt).toLocaleString(undefined, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</Table.Td>
+                    <Table.Td>{formatEUR(bet.amount)}</Table.Td>
+                    <Table.Td>{bet.winAmount ? formatEUR(bet.winAmount) : '-'}</Table.Td>
+                    <Table.Td>
+                      <BetStatusBadge status={bet.status} />
+                    </Table.Td>
+                    <Table.Td>
+                      <Button 
+                        size="xs" 
+                        variant="light" 
+                        color="red"
+                        disabled={bet.status === 'canceled' || bet.status === 'win' || cancelMutation.isPending}
+                        onClick={() => handleCancelBet(bet.id)}
+                      >
+                        {t('cancelBet')}
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
           {data && data.total > limit && (
             <Group justify="center" mt="xl">
@@ -123,6 +125,8 @@ export const MyBets = () => {
                 total={Math.ceil(data.total / limit)} 
                 value={page} 
                 onChange={setPage} 
+                size="sm"
+                siblings={1}
               />
             </Group>
           )}

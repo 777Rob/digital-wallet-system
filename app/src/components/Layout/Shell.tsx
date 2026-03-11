@@ -44,17 +44,17 @@ export const Shell = () => {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
-          <Group>
+        <Group h="100%" px="md" justify="space-between" wrap="nowrap">
+          <Group wrap="nowrap" gap="sm">
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <Group gap="sm">
+            <Group gap="sm" wrap="nowrap">
               <IconWallet size={34} className="wallet-logo-icon" />
-              <Title order={2} c="green" style={{ fontFamily: 'Inter, sans-serif' }}>QuestWallet</Title>
+              <Title order={2} c="green" visibleFrom="sm" style={{ fontFamily: 'Inter, sans-serif' }}>QuestWallet</Title>
             </Group>
           </Group>
 
-          <Group>
-            <Text fw={700} c="green" size="lg">
+          <Group wrap="nowrap" gap="xs">
+            <Text fw={700} c="green" size="md">
               {formatEUR(balance)}
             </Text>
 

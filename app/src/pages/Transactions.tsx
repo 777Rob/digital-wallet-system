@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Title, Table, Pagination, Group, Select, TextInput, Badge, Loader, Text, Center } from '@mantine/core';
+import { Container, Title, Table, Pagination, Group, Select, TextInput, Badge, Loader, Text, Center, SimpleGrid } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useTransactions } from '../hooks/queries/useTransactions';
@@ -39,7 +39,7 @@ export const Transactions = () => {
     <Container size="xl" mt="xl">
       <Title order={2} mb="xl">{t('transactions')}</Title>
 
-      <Group mb="md">
+      <SimpleGrid cols={{ base: 1, sm: 2 }} mb="md">
         <Select
           placeholder={t('filterType')}
           value={type}
@@ -57,7 +57,7 @@ export const Transactions = () => {
           value={idFilter}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIdFilter(event.currentTarget.value)}
         />
-      </Group>
+      </SimpleGrid>
 
       {isLoading && !data ? (
         <Center my={50}><Loader /></Center>
@@ -67,34 +67,36 @@ export const Transactions = () => {
         </Center>
       ) : (
         <>
-          <Table striped highlightOnHover withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>ID</Table.Th>
-                <Table.Th>{t('date')}</Table.Th>
-                <Table.Th>{t('type')}</Table.Th>
-                <Table.Th>{t('amount')}</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {data?.data.map((tx) => (
-                <Table.Tr key={tx.id}>
-                  <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                    <Text size="xs" c="dimmed">{tx.id}</Text>
-                  </Table.Td>
-                  <Table.Td>{new Date(tx.createdAt).toLocaleString()}</Table.Td>
-                  <Table.Td>
-                    <Badge color={TRANSACTION_TYPE_COLOR[tx.type] ?? 'gray'}>
-                      {tx.type.toUpperCase()}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <TransactionAmountCell amount={tx.amount} type={tx.type} />
-                  </Table.Td>
+          <Table.ScrollContainer minWidth={600}>
+            <Table striped highlightOnHover withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>ID</Table.Th>
+                  <Table.Th>{t('date')}</Table.Th>
+                  <Table.Th>{t('type')}</Table.Th>
+                  <Table.Th>{t('amount')}</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {data?.data.map((tx) => (
+                  <Table.Tr key={tx.id}>
+                    <Table.Td style={{ maxWidth: '120px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                      <Text size="xs" c="dimmed">{tx.id}</Text>
+                    </Table.Td>
+                    <Table.Td>{new Date(tx.createdAt).toLocaleString(undefined, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</Table.Td>
+                    <Table.Td>
+                      <Badge color={TRANSACTION_TYPE_COLOR[tx.type] ?? 'gray'}>
+                        {tx.type.toUpperCase()}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      <TransactionAmountCell amount={tx.amount} type={tx.type} />
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
           {data && data.total > limit && (
             <Group justify="center" mt="xl">
@@ -102,6 +104,8 @@ export const Transactions = () => {
                 total={Math.ceil(data.total / limit)} 
                 value={page} 
                 onChange={setPage} 
+                size="sm"
+                siblings={1}
               />
             </Group>
           )}

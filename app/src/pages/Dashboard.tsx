@@ -64,7 +64,7 @@ export const Dashboard = () => {
         />
         <Paper shadow="sm" p="xl" withBorder h="100%">
           <Stack align="center" justify="center" h="100%" gap="xs">
-            <Title order={1} c="green" style={{ fontSize: '3rem' }}>
+            <Title order={1} c="green" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
               {formatEUR(balance)}
             </Title>
             <Text c="dimmed" size="lg" fw={500}>{t('globalBalance')}</Text>
@@ -76,7 +76,7 @@ export const Dashboard = () => {
         <CoinFlipResult isFlipping={isFlipping} result={result} />
       )}
 
-      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg" mt="xl">
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing={{ base: 'md', md: 'lg' }} mt={{ base: 'md', md: 'xl' }}>
         <Box>
           <Group justify="space-between" mb="md">
             <Title order={3}>{t('quickHistory')}</Title>
