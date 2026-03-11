@@ -8,6 +8,7 @@ import { Dashboard } from './pages/Dashboard';
 import { MyBets } from './pages/MyBets';
 import { Transactions } from './pages/Transactions';
 import { Wallet } from './pages/Wallet';
+import { WheelOfFortune } from './pages/WheelOfFortune';
 import { useAuthStore } from './store/useAuthStore';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/my-bets" element={<MyBets />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/wheel-of-fortune" element={<WheelOfFortune />} />
           </Route>
         </Route>
 

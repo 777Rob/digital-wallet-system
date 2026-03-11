@@ -48,6 +48,9 @@ app.post("/register", (req, res) => {
     bets: [],
     transactions: [],
     redeemedCodes: [],
+    availableSpins: 1,
+    lastFreeSpinClaimDate: null,
+    betAmountTowardsSpin: 0,
   });
 
   res.json({
@@ -198,6 +201,13 @@ app.post("/bet", (req, res) => {
 
   if (isWin) player.balance = player.balance + amount * 2;
 
+  player.betAmountTowardsSpin += amount;
+  if (player.betAmountTowardsSpin >= 1000) {
+    const extraSpins = Math.floor(player.betAmountTowardsSpin / 1000);
+    player.availableSpins += extraSpins;
+    player.betAmountTowardsSpin %= 1000;
+  }
+
   player.transactions.push({
     id: betTransactionId,
     amount,
@@ -346,6 +356,104 @@ app.get("/my-transactions", (req, res) => {
     total,
     page: Number(page),
     limit: Number(limit),
+  });
+});
+
+app.get("/wheel-status", (req, res) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) return res.status(401).json({ message: "Invalid token" });
+  
+  const player = players.find(p => p.accessToken === authorization.replace("Bearer ", ""));
+  if (!player) return res.status(401).json({ message: "Invalid token" });
+
+  res.json({
+    availableSpins: player.availableSpins,
+    lastFreeSpinClaimDate: player.lastFreeSpinClaimDate,
+    betAmountTowardsSpin: player.betAmountTowardsSpin,
+  });
+});
+
+app.post("/wheel/claim-free", (req, res) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) return res.status(401).json({ message: "Invalid token" });
+  
+  const player = players.find(p => p.accessToken === authorization.replace("Bearer ", ""));
+  if (!player) return res.status(401).json({ message: "Invalid token" });
+
+  const now = new Date();
+  if (player.lastFreeSpinClaimDate) {
+    const lastClaim = new Date(player.lastFreeSpinClaimDate);
+    const diffHours = (now - lastClaim) / (1000 * 60 * 60);
+    if (diffHours < 24) {
+      return res.status(400).json({ message: "You can only claim a free spin once every 24 hours" });
+    }
+  }
+
+  player.availableSpins += 1;
+  player.lastFreeSpinClaimDate = now;
+
+  res.json({
+    availableSpins: player.availableSpins,
+    lastFreeSpinClaimDate: player.lastFreeSpinClaimDate,
+  });
+});
+
+app.post("/wheel/spin", (req, res) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) return res.status(401).json({ message: "Invalid token" });
+  
+  const player = players.find(p => p.accessToken === authorization.replace("Bearer ", ""));
+  if (!player) return res.status(401).json({ message: "Invalid token" });
+
+  if (player.availableSpins <= 0) {
+    return res.status(400).json({ message: "No spins available" });
+  }
+
+  player.availableSpins -= 1;
+
+  // Define prizes and probabilities
+  const prizes = [
+    { amount: 0, prob: 0.5 },
+    { amount: 10, prob: 0.25 },
+    { amount: 50, prob: 0.15 },
+    { amount: 100, prob: 0.08 },
+    { amount: 500, prob: 0.019 },
+    { amount: 1000, prob: 0.001 },
+  ];
+
+  const rand = Math.random();
+  let cumulativeProb = 0;
+  let wonAmount = 0;
+
+  for (const prize of prizes) {
+    cumulativeProb += prize.prob;
+    if (rand <= cumulativeProb) {
+      wonAmount = prize.amount;
+      break;
+    }
+  }
+
+  if (wonAmount > 0) {
+    player.balance += wonAmount;
+    
+    const transactionId = faker.string.uuid();
+    player.transactions.push({
+      id: transactionId,
+      amount: wonAmount,
+      type: "wheel_win",
+      createdAt: new Date(),
+    });
+
+    io.emit("balance_update", {
+      userId: player.id,
+      balance: player.balance
+    });
+  }
+
+  res.json({
+    wonAmount,
+    balance: player.balance,
+    availableSpins: player.availableSpins,
   });
 });
 

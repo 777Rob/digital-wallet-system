@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { AppShell, Burger, Group, Title, Text, ActionIcon, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Outlet, NavLink as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { IconLogout, IconCoin, IconTicket, IconHistory, IconWallet } from '@tabler/icons-react';
+import { IconLogout, IconCoin, IconTicket, IconHistory, IconWallet, IconGift } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useWalletStore } from '../../store/useWalletStore';
@@ -33,6 +33,7 @@ export const Shell = () => {
     { to: '/wallet', label: t('wallet'), icon: <IconWallet size={24} stroke={1.5} /> },
     { to: '/my-bets', label: t('myBets'), icon: <IconTicket size={24} stroke={1.5} /> },
     { to: '/transactions', label: t('transactions'), icon: <IconHistory size={24} stroke={1.5} /> },
+    { to: '/wheel-of-fortune', label: t('wheelOfFortune', 'Wheel of Fortune'), icon: <IconGift size={24} stroke={1.5} /> },
   ], [t]);
 
   return (
