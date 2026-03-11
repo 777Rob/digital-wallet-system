@@ -1,0 +1,80 @@
+import { TextInput, PasswordInput, Button, Paper, Title, Container, Text, Anchor, Stack } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { useTranslation } from 'react-i18next';
+import { useMutation } from '@tanstack/react-query';
+import { apiClient } from '../api/client';
+import { useAuthStore } from '../store/useAuthStore';
+import { notifications } from '@mantine/notifications';
+import { Link, useNavigate } from 'react-router-dom';
+import { useWalletStore } from '../store/useWalletStore';
+
+export const Login = () => {
+  const { t } = useTranslation();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const { setBalance, setCurrency } = useWalletStore();
+  const navigate = useNavigate();
+
+  const form = useForm({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validate: {
+      email: (val: string) => (/^\S+@\S+$/.test(val) ? null : t('invalidEmail')),
+      password: (val: string) => (val.length < 6 ? t('required') : null),
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (values: typeof form.values) => {
+      const response = await apiClient.post('/login', values);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setAuth(data.accessToken, { id: data.id, name: data.name });
+      setBalance(data.balance);
+      setCurrency(data.currency);
+      navigate('/dashboard');
+    },
+    onError: (error: any) => {
+      notifications.show({
+        title: 'Error',
+        message: error.response?.data?.message || 'Login failed',
+        color: 'red',
+      });
+    },
+  });
+
+  return (
+    <Container size={420} my={40}>
+      <Title ta="center">{t('login')}</Title>
+      
+      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <form onSubmit={form.onSubmit((values: any) => mutation.mutate(values))}>
+          <Stack>
+            <TextInput
+              label={t('email')}
+              placeholder="hello@example.com"
+              required
+              {...form.getInputProps('email')}
+            />
+            <PasswordInput
+              label={t('password')}
+              placeholder="Your password"
+              required
+              {...form.getInputProps('password')}
+            />
+            <Button fullWidth mt="xl" type="submit" loading={mutation.isPending}>
+              {t('login')}
+            </Button>
+          </Stack>
+        </form>
+        <Text c="dimmed" size="sm" ta="center" mt={15}>
+          <Anchor component={Link} to="/register" size="sm">
+            {t('noAccount')}
+          </Anchor>
+        </Text>
+      </Paper>
+    </Container>
+  );
+};
