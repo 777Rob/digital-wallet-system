@@ -8,7 +8,6 @@ import {
   Text,
   Anchor,
   Stack,
-  Group,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useTranslation } from "react-i18next";
@@ -16,8 +15,6 @@ import { notifications } from "@mantine/notifications";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../hooks/mutations/useAuthMutations";
 import { extractErrorMessage } from "../utils/errorMessage";
-import { AppLogo } from "../components/common/AppLogo";
-import { IconWallet } from "@tabler/icons-react";
 
 export const Register = () => {
   const { t } = useTranslation();

@@ -8,7 +8,6 @@ import {
   Text,
   Anchor,
   Stack,
-  Group,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useTranslation } from "react-i18next";
@@ -18,8 +17,6 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useWalletStore } from "../store/useWalletStore";
 import { useLoginMutation } from "../hooks/mutations/useAuthMutations";
 import { extractErrorMessage } from "../utils/errorMessage";
-import { AppLogo } from "../components/common/AppLogo";
-import { IconWallet } from "@tabler/icons-react";
 
 export const Login = () => {
   const { t } = useTranslation();
