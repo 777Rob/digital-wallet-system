@@ -300,13 +300,10 @@ app.delete("/my-bet/:id", (req, res) => {
     return res.status(400).json({ message: "Bet already canceled" });
 
   if (bet.status === "win") {
-    // Winning bet: try to deduct the win amount from balance
-    if (player.balance >= bet.winAmount) {
-      player.balance -= bet.winAmount;
+    if (player.balance >= bet.amount) {
+      player.balance -= bet.amount;
     }
-    // If not enough balance, just cancel without balance change
   } else {
-    // Lost bet: refund the bet amount
     player.balance += bet.amount;
   }
   bet.status = "canceled";
