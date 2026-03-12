@@ -7,6 +7,7 @@ const http = require("http");
 const path = require("path");
 const fs = require("fs");
 const { Server } = require("socket.io");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -50,7 +51,7 @@ function savePlayers() {
 
 const players = loadPlayers();
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
   const id = faker.string.uuid();
 
@@ -60,12 +61,13 @@ app.post("/register", (req, res) => {
   if (password !== confirmPassword)
     return res.status(400).json({ message: "Passwords do not match" });
 
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   players.push({
     id,
     name,
     email,
-    password,
-    confirmPassword,
+    password: hashedPassword,
     balance: 1000,
     currency: "EUR",
     accessToken: null,
@@ -179,14 +181,18 @@ app.post("/promo-code", (req, res) => {
   });
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const player = players.find(
-    (player) => player.email === email && player.password === password
-  );
+  const player = players.find((player) => player.email === email);
 
   if (!player)
+    return res.status(400).json({ message: "Invalid email or password" });
+
+  const isMatch = await bcrypt.compare(password, player.password).catch(() => false);
+  const isValid = isMatch || player.password === password;
+
+  if (!isValid)
     return res.status(400).json({ message: "Invalid email or password" });
 
   const accessToken = faker.string.uuid();
