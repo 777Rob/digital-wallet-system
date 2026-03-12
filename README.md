@@ -71,7 +71,7 @@ Digital-Wallet-System/
 ```bash
 cd mock-api
 npm install
-npm run dev
+npm run start
 ```
 
 The API server will be available at [http://localhost:3000](http://localhost:3000).
