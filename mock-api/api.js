@@ -5,6 +5,7 @@ const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const http = require("http");
 const path = require("path");
+const fs = require("fs");
 const { Server } = require("socket.io");
 
 const app = express();
@@ -25,7 +26,29 @@ io.on("connection", (socket) => {
   console.log("WebSocket connected:", socket.id);
 });
 
-const players = [];
+const DATA_FILE = path.join(__dirname, "players.json");
+
+function loadPlayers() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const data = fs.readFileSync(DATA_FILE, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error("Failed to load players.json, starting fresh:", err.message);
+  }
+  return [];
+}
+
+function savePlayers() {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(players, null, 2));
+  } catch (err) {
+    console.error("Failed to save players.json:", err.message);
+  }
+}
+
+const players = loadPlayers();
 
 app.post("/register", (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
@@ -54,6 +77,7 @@ app.post("/register", (req, res) => {
     betAmountTowardsSpin: 0,
   });
 
+  savePlayers();
   res.json({
     id,
     name,
@@ -98,6 +122,7 @@ app.post("/top-up", (req, res) => {
     balance: player.balance,
   });
 
+  savePlayers();
   res.json({
     transactionId,
     balance: player.balance,
@@ -144,6 +169,7 @@ app.post("/promo-code", (req, res) => {
     balance: player.balance,
   });
 
+  savePlayers();
   res.json({
     transactionId,
     balance: player.balance,
@@ -167,6 +193,7 @@ app.post("/login", (req, res) => {
 
   player.accessToken = accessToken;
 
+  savePlayers();
   res.json({
     id: player.id,
     name: player.name,
@@ -237,6 +264,7 @@ app.post("/bet", (req, res) => {
     balance: player.balance
   });
 
+  savePlayers();
   res.json({
     transactionId: betTransactionId,
     currency: "EUR",
@@ -320,6 +348,7 @@ app.delete("/my-bet/:id", (req, res) => {
     balance: player.balance
   });
 
+  savePlayers();
   res.json({
     transactionId: id,
     balance: player.balance,
@@ -396,6 +425,7 @@ app.post("/wheel/claim-free", (req, res) => {
   player.availableSpins += 1;
   player.lastFreeSpinClaimDate = now;
 
+  savePlayers();
   res.json({
     availableSpins: player.availableSpins,
     lastFreeSpinClaimDate: player.lastFreeSpinClaimDate,
@@ -454,6 +484,7 @@ app.post("/wheel/spin", (req, res) => {
     });
   }
 
+  savePlayers();
   res.json({
     wonAmount,
     balance: player.balance,
