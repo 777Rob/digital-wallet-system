@@ -8,7 +8,7 @@ A single-page web application implementing a digital wallet for an online gaming
 - **Coin-Flip Betting** — Place bets with animated coin-flip resolution and instant balance updates.
 - **Wallet Management** — Top up balance and redeem one-time promotional codes (e.g., `HELLO` for €1,000 free credits).
 - **Bet Management** — View paginated bet history with status filtering and cancellation support for pending bets.
-- **Wheel of Fortune** — Daily free spin mechanism. Users can claim a free spin every 24 hours, and earn additional spins by accumulating €50 in total bets.
+- **Wheel of Fortune** — Daily free spin mechanism. Users can claim a free spin every 24 hours, and earn additional spins by accumulating €1000 in total bets.
 - **Transaction History** — Filterable, paginated ledger of all wallet activity (bets, wins, cancellations, deposits, promos, wheel prizes).
 - **Real-Time Balance** — WebSocket integration ensures the displayed balance stays current across tabs and after background events.
 - **Internationalisation** — Full English and Lithuanian translations, switchable at runtime.
